@@ -1,6 +1,6 @@
 //
 //  main.m
-//  AudioConverter
+//  AudioPlayer
 //
 //  Created by Sun,Jinglin on 2020/6/28.
 //  Copyright © 2020 Sun,Jinglin. All rights reserved.

@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:AudioConverter.xcodeproj">
+      location = "self:/Users/sunjinglin/Documents/Allcode/AudioConverter/AudioPlayer.xcodeproj">
    </FileRef>
 </Workspace>

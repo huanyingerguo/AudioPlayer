@@ -1,6 +1,6 @@
 //
-//  AudioConverterUITests.m
-//  AudioConverterUITests
+//  AudioPlayerUITests.m
+//  AudioPlayerUITests
 //
 //  Created by Sun,Jinglin on 2020/6/28.
 //  Copyright © 2020 Sun,Jinglin. All rights reserved.
@@ -8,11 +8,11 @@
 
 #import <XCTest/XCTest.h>
 
-@interface AudioConverterUITests : XCTestCase
+@interface AudioPlayerUITests : XCTestCase
 
 @end
 
-@implementation AudioConverterUITests
+@implementation AudioPlayerUITests
 
 - (void)setUp {
     // Put setup code here. This method is called before the invocation of each test method in the class.

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CA287E6124A9D66100A44FC6 /* music_48k-01.wav in Resources */ = {isa = PBXBuildFile; fileRef = CA287E5F24A9D66100A44FC6 /* music_48k-01.wav */; };
+		CA287E6224A9D66100A44FC6 /* 周杰伦 - 晴天.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CA287E6024A9D66100A44FC6 /* 周杰伦 - 晴天.mp3 */; };
 		CAB6035F24A883C1004B313E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CAB6035E24A883C1004B313E /* AppDelegate.m */; };
 		CAB6036224A883C1004B313E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CAB6036124A883C1004B313E /* ViewController.m */; };
 		CAB6036424A883C4004B313E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CAB6036324A883C4004B313E /* Assets.xcassets */; };
@@ -14,8 +16,6 @@
 		CAB6036A24A883C4004B313E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CAB6036924A883C4004B313E /* main.m */; };
 		CAB6037524A883C5004B313E /* AudioConverterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CAB6037424A883C5004B313E /* AudioConverterTests.m */; };
 		CAB6038024A883C5004B313E /* AudioConverterUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = CAB6037F24A883C5004B313E /* AudioConverterUITests.m */; };
-		CAB6038F24A88DA0004B313E /* 周杰伦 - 晴天.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CAB6038D24A88DA0004B313E /* 周杰伦 - 晴天.mp3 */; };
-		CAB6039024A88DA0004B313E /* music_48k-01.wav in Resources */ = {isa = PBXBuildFile; fileRef = CAB6038E24A88DA0004B313E /* music_48k-01.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,7 +36,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		CAB6035A24A883C1004B313E /* AudioConverter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AudioConverter.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CA287E5F24A9D66100A44FC6 /* music_48k-01.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "music_48k-01.wav"; path = "AudioPlayer/music_48k-01.wav"; sourceTree = "<group>"; };
+		CA287E6024A9D66100A44FC6 /* 周杰伦 - 晴天.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "周杰伦 - 晴天.mp3"; path = "AudioPlayer/周杰伦 - 晴天.mp3"; sourceTree = "<group>"; };
+		CAB6035A24A883C1004B313E /* AudioPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AudioPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAB6035D24A883C1004B313E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		CAB6035E24A883C1004B313E /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		CAB6036024A883C1004B313E /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
@@ -46,14 +48,12 @@
 		CAB6036824A883C4004B313E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CAB6036924A883C4004B313E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		CAB6036B24A883C4004B313E /* AudioConverter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AudioConverter.entitlements; sourceTree = "<group>"; };
-		CAB6037024A883C5004B313E /* AudioConverterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AudioConverterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CAB6037024A883C5004B313E /* AudioPlayerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AudioPlayerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAB6037424A883C5004B313E /* AudioConverterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioConverterTests.m; sourceTree = "<group>"; };
 		CAB6037624A883C5004B313E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		CAB6037B24A883C5004B313E /* AudioConverterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AudioConverterUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CAB6037B24A883C5004B313E /* AudioPlayerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AudioPlayerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAB6037F24A883C5004B313E /* AudioConverterUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioConverterUITests.m; sourceTree = "<group>"; };
 		CAB6038124A883C5004B313E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		CAB6038D24A88DA0004B313E /* 周杰伦 - 晴天.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "周杰伦 - 晴天.mp3"; path = "AudioConverter/周杰伦 - 晴天.mp3"; sourceTree = "<group>"; };
-		CAB6038E24A88DA0004B313E /* music_48k-01.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "music_48k-01.wav"; path = "AudioConverter/music_48k-01.wav"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,11 +84,11 @@
 		CAB6035124A883C1004B313E = {
 			isa = PBXGroup;
 			children = (
-				CAB6038D24A88DA0004B313E /* 周杰伦 - 晴天.mp3 */,
-				CAB6038E24A88DA0004B313E /* music_48k-01.wav */,
-				CAB6035C24A883C1004B313E /* AudioConverter */,
-				CAB6037324A883C5004B313E /* AudioConverterTests */,
-				CAB6037E24A883C5004B313E /* AudioConverterUITests */,
+				CA287E6024A9D66100A44FC6 /* 周杰伦 - 晴天.mp3 */,
+				CA287E5F24A9D66100A44FC6 /* music_48k-01.wav */,
+				CAB6035C24A883C1004B313E /* AudioPlayer */,
+				CAB6037324A883C5004B313E /* AudioPlayerTests */,
+				CAB6037E24A883C5004B313E /* AudioPlayer UITests */,
 				CAB6035B24A883C1004B313E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -96,14 +96,14 @@
 		CAB6035B24A883C1004B313E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				CAB6035A24A883C1004B313E /* AudioConverter.app */,
-				CAB6037024A883C5004B313E /* AudioConverterTests.xctest */,
-				CAB6037B24A883C5004B313E /* AudioConverterUITests.xctest */,
+				CAB6035A24A883C1004B313E /* AudioPlayer.app */,
+				CAB6037024A883C5004B313E /* AudioPlayerTests.xctest */,
+				CAB6037B24A883C5004B313E /* AudioPlayerUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		CAB6035C24A883C1004B313E /* AudioConverter */ = {
+		CAB6035C24A883C1004B313E /* AudioPlayer */ = {
 			isa = PBXGroup;
 			children = (
 				CAB6035D24A883C1004B313E /* AppDelegate.h */,
@@ -116,33 +116,33 @@
 				CAB6036924A883C4004B313E /* main.m */,
 				CAB6036B24A883C4004B313E /* AudioConverter.entitlements */,
 			);
-			path = AudioConverter;
+			path = AudioPlayer;
 			sourceTree = "<group>";
 		};
-		CAB6037324A883C5004B313E /* AudioConverterTests */ = {
+		CAB6037324A883C5004B313E /* AudioPlayerTests */ = {
 			isa = PBXGroup;
 			children = (
 				CAB6037424A883C5004B313E /* AudioConverterTests.m */,
 				CAB6037624A883C5004B313E /* Info.plist */,
 			);
-			path = AudioConverterTests;
+			path = AudioPlayerTests;
 			sourceTree = "<group>";
 		};
-		CAB6037E24A883C5004B313E /* AudioConverterUITests */ = {
+		CAB6037E24A883C5004B313E /* AudioPlayer UITests */ = {
 			isa = PBXGroup;
 			children = (
 				CAB6037F24A883C5004B313E /* AudioConverterUITests.m */,
 				CAB6038124A883C5004B313E /* Info.plist */,
 			);
-			path = AudioConverterUITests;
+			path = "AudioPlayer UITests";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		CAB6035924A883C1004B313E /* AudioConverter */ = {
+		CAB6035924A883C1004B313E /* AudioPlayer */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CAB6038424A883C5004B313E /* Build configuration list for PBXNativeTarget "AudioConverter" */;
+			buildConfigurationList = CAB6038424A883C5004B313E /* Build configuration list for PBXNativeTarget "AudioPlayer" */;
 			buildPhases = (
 				CAB6035624A883C1004B313E /* Sources */,
 				CAB6035724A883C1004B313E /* Frameworks */,
@@ -152,14 +152,14 @@
 			);
 			dependencies = (
 			);
-			name = AudioConverter;
+			name = AudioPlayer;
 			productName = AudioConverter;
-			productReference = CAB6035A24A883C1004B313E /* AudioConverter.app */;
+			productReference = CAB6035A24A883C1004B313E /* AudioPlayer.app */;
 			productType = "com.apple.product-type.application";
 		};
-		CAB6036F24A883C5004B313E /* AudioConverterTests */ = {
+		CAB6036F24A883C5004B313E /* AudioPlayerTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CAB6038724A883C5004B313E /* Build configuration list for PBXNativeTarget "AudioConverterTests" */;
+			buildConfigurationList = CAB6038724A883C5004B313E /* Build configuration list for PBXNativeTarget "AudioPlayerTests" */;
 			buildPhases = (
 				CAB6036C24A883C5004B313E /* Sources */,
 				CAB6036D24A883C5004B313E /* Frameworks */,
@@ -170,14 +170,14 @@
 			dependencies = (
 				CAB6037224A883C5004B313E /* PBXTargetDependency */,
 			);
-			name = AudioConverterTests;
+			name = AudioPlayerTests;
 			productName = AudioConverterTests;
-			productReference = CAB6037024A883C5004B313E /* AudioConverterTests.xctest */;
+			productReference = CAB6037024A883C5004B313E /* AudioPlayerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		CAB6037A24A883C5004B313E /* AudioConverterUITests */ = {
+		CAB6037A24A883C5004B313E /* AudioPlayerUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CAB6038A24A883C5004B313E /* Build configuration list for PBXNativeTarget "AudioConverterUITests" */;
+			buildConfigurationList = CAB6038A24A883C5004B313E /* Build configuration list for PBXNativeTarget "AudioPlayerUITests" */;
 			buildPhases = (
 				CAB6037724A883C5004B313E /* Sources */,
 				CAB6037824A883C5004B313E /* Frameworks */,
@@ -188,9 +188,9 @@
 			dependencies = (
 				CAB6037D24A883C5004B313E /* PBXTargetDependency */,
 			);
-			name = AudioConverterUITests;
+			name = AudioPlayerUITests;
 			productName = AudioConverterUITests;
-			productReference = CAB6037B24A883C5004B313E /* AudioConverterUITests.xctest */;
+			productReference = CAB6037B24A883C5004B313E /* AudioPlayerUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -215,7 +215,7 @@
 					};
 				};
 			};
-			buildConfigurationList = CAB6035524A883C1004B313E /* Build configuration list for PBXProject "AudioConverter" */;
+			buildConfigurationList = CAB6035524A883C1004B313E /* Build configuration list for PBXProject "AudioPlayer" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -228,9 +228,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				CAB6035924A883C1004B313E /* AudioConverter */,
-				CAB6036F24A883C5004B313E /* AudioConverterTests */,
-				CAB6037A24A883C5004B313E /* AudioConverterUITests */,
+				CAB6035924A883C1004B313E /* AudioPlayer */,
+				CAB6036F24A883C5004B313E /* AudioPlayerTests */,
+				CAB6037A24A883C5004B313E /* AudioPlayerUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -241,8 +241,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				CAB6036424A883C4004B313E /* Assets.xcassets in Resources */,
-				CAB6039024A88DA0004B313E /* music_48k-01.wav in Resources */,
-				CAB6038F24A88DA0004B313E /* 周杰伦 - 晴天.mp3 in Resources */,
+				CA287E6124A9D66100A44FC6 /* music_48k-01.wav in Resources */,
+				CA287E6224A9D66100A44FC6 /* 周杰伦 - 晴天.mp3 in Resources */,
 				CAB6036724A883C4004B313E /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -295,12 +295,12 @@
 /* Begin PBXTargetDependency section */
 		CAB6037224A883C5004B313E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = CAB6035924A883C1004B313E /* AudioConverter */;
+			target = CAB6035924A883C1004B313E /* AudioPlayer */;
 			targetProxy = CAB6037124A883C5004B313E /* PBXContainerItemProxy */;
 		};
 		CAB6037D24A883C5004B313E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = CAB6035924A883C1004B313E /* AudioConverter */;
+			target = CAB6035924A883C1004B313E /* AudioPlayer */;
 			targetProxy = CAB6037C24A883C5004B313E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -440,7 +440,7 @@
 					"$(inherited)",
 					"MAC=1",
 				);
-				INFOPLIST_FILE = AudioConverter/Info.plist;
+				INFOPLIST_FILE = AudioPlayer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -457,7 +457,7 @@
 				CODE_SIGN_ENTITLEMENTS = AudioConverter/AudioConverter.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = AudioConverter/Info.plist;
+				INFOPLIST_FILE = AudioPlayer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -473,7 +473,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = AudioConverterTests/Info.plist;
+				INFOPLIST_FILE = AudioPlayerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -481,7 +481,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = conan.AudioConverterTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AudioConverter.app/Contents/MacOS/AudioConverter";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AudioPlayer.app/Contents/MacOS/AudioPlayer";
 			};
 			name = Debug;
 		};
@@ -491,7 +491,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = AudioConverterTests/Info.plist;
+				INFOPLIST_FILE = AudioPlayerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -499,7 +499,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = conan.AudioConverterTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AudioConverter.app/Contents/MacOS/AudioConverter";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AudioPlayer.app/Contents/MacOS/AudioPlayer";
 			};
 			name = Release;
 		};
@@ -508,7 +508,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = AudioConverterUITests/Info.plist;
+				INFOPLIST_FILE = AudioPlayerUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -525,7 +525,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = AudioConverterUITests/Info.plist;
+				INFOPLIST_FILE = AudioPlayerUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -540,7 +540,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		CAB6035524A883C1004B313E /* Build configuration list for PBXProject "AudioConverter" */ = {
+		CAB6035524A883C1004B313E /* Build configuration list for PBXProject "AudioPlayer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CAB6038224A883C5004B313E /* Debug */,
@@ -549,7 +549,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CAB6038424A883C5004B313E /* Build configuration list for PBXNativeTarget "AudioConverter" */ = {
+		CAB6038424A883C5004B313E /* Build configuration list for PBXNativeTarget "AudioPlayer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CAB6038524A883C5004B313E /* Debug */,
@@ -558,7 +558,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CAB6038724A883C5004B313E /* Build configuration list for PBXNativeTarget "AudioConverterTests" */ = {
+		CAB6038724A883C5004B313E /* Build configuration list for PBXNativeTarget "AudioPlayerTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CAB6038824A883C5004B313E /* Debug */,
@@ -567,7 +567,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CAB6038A24A883C5004B313E /* Build configuration list for PBXNativeTarget "AudioConverterUITests" */ = {
+		CAB6038A24A883C5004B313E /* Build configuration list for PBXNativeTarget "AudioPlayerUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CAB6038B24A883C5004B313E /* Debug */,

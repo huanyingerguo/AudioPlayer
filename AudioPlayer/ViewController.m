@@ -1,6 +1,6 @@
 //
 //  ViewController.m
-//  AudioConverter
+//  AudioPlayer
 //
 //  Created by Sun,Jinglin on 2020/6/28.
 //  Copyright © 2020 Sun,Jinglin. All rights reserved.
@@ -38,6 +38,7 @@
 
 @property (weak) IBOutlet NSButton *playBtn;
 @property (weak) IBOutlet NSButton *pauseBtn;
+@property (weak) IBOutlet NSSlider *slier;
 
 
 @end
@@ -52,7 +53,6 @@
     [self prepareFileInfo];
     [self prepareAudioConverter];
     [self prepareForPlay];
-    [self configAudioUnit];
 }
 
 - (void)prepareFileInfo {
@@ -148,9 +148,11 @@
 
 #pragma mark- Logic
 - (void)start {
+    [self configAudioUnit];
+
     OSStatus status;
     status = AudioUnitInitialize(unit);
-    CheckError(status, "AudioUnitInitialize失败");
+    CheckError(status, "AudioUnit初始化失败");
 
     status = AudioOutputUnitStart(unit);
     CheckError(status, "audioUnit开始失败");
@@ -162,7 +164,7 @@
     CheckError(status, "audioUnit停止失败");
     
     status = AudioUnitUninitialize(unit);
-    CheckError(status, "AudioUnitUnInitialize失败");
+    CheckError(status, "AudioUnits取消初始化失败");
 
     status = AudioComponentInstanceDispose(unit);
     CheckError(status, "audioUnit释放失败");
@@ -174,6 +176,13 @@
 
 - (IBAction)pauseClicked:(id)sender {
     [self pause];
+}
+
+
+- (IBAction)sliderAction:(id)sender {
+    NSSlider *slider = (NSSlider *)sender;
+
+    self->readedPacket = slider.floatValue / 100 * self->packetNums;
 }
 
 #pragma mark-
@@ -263,6 +272,9 @@ OSStatus lyInInputDataProc(AudioConverterRef inAudioConverter, UInt32 *ioNumberD
         ioData->mBuffers[0].mDataByteSize = byteSize;
         ioData->mBuffers[0].mData = player->convertBuffer;
         player->readedPacket += *ioNumberDataPackets;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //player->_slier.floatValue = player->readedPacket / player->packetNums * 100;
+        });
         return noErr;
     }
     else {
@@ -270,7 +282,6 @@ OSStatus lyInInputDataProc(AudioConverterRef inAudioConverter, UInt32 *ioNumberD
     }
     
 }
-
 
 + (void)printAudioStreamBasicDescription:(AudioStreamBasicDescription)asbd andkit:(NSTextField *)l
 {
