@@ -39,8 +39,11 @@
 @property (weak) IBOutlet NSButton *playBtn;
 @property (weak) IBOutlet NSButton *pauseBtn;
 @property (weak) IBOutlet NSSlider *slier;
+@property (weak) IBOutlet NSTextField *progress;
+@property (weak) IBOutlet NSButton *recordBtn;
 
-
+@property (assign) BOOL isRecording;
+@property (assign) BOOL isPlaying;
 @end
 
 @implementation ViewController
@@ -98,7 +101,7 @@
     // Update the view, if already loaded.
 }
 
-- (void)configAudioUnit {
+- (void)configAudioUnit:(BOOL)isEnableRecord {
     AudioComponentDescription desc;
     desc.componentType = kAudioUnitType_Output;
     desc.componentSubType = kAudioUnitSubType_HALOutput; //mac专用
@@ -120,16 +123,32 @@
     //设置输入流格式
     AudioStreamBasicDescription asbdInfo = [self buildAudioStreamBasicDesc:32 sampleRate:44100 channelsPerFrame:1 framesPerPacket:1];
     [[self class] printAudioStreamBasicDescription:asbdInfo andkit:self.outputDesc];
-
-    status = AudioUnitSetProperty(unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, kOutputBus, &asbdInfo, sizeof(asbdInfo));
-    CheckError(status, "AudioUnitSetProperty failed");
     
-    //设置声音输入回掉
-    AURenderCallbackStruct renderCallback;
-    renderCallback.inputProc = outputCallBackFun;
-    renderCallback.inputProcRefCon = (__bridge void *)self;
-    status = AudioUnitSetProperty(unit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, kOutputBus, &renderCallback, sizeof(renderCallback));
-    CheckError(status, "AudioUnitSetProperty failed");
+    if (isEnableRecord) {
+        // 打开音频录制
+        BOOL flagIn = YES;
+        status = AudioUnitSetProperty(unit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input, kInputBus, &flagIn, sizeof(flagIn));
+
+        status = AudioUnitSetProperty(unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, kInputBus, &asbdInfo, sizeof(asbdInfo));
+        CheckError(status, "kAudioUnitProperty_StreamFormat failed");
+        
+        //设置声音录制回调
+        AURenderCallbackStruct recordCallback;
+        recordCallback.inputProc = outputCallbackFun;
+        recordCallback.inputProcRefCon = (__bridge void *)self;
+        status = AudioUnitSetProperty(unit, kAudioOutputUnitProperty_SetInputCallback, kAudioUnitScope_Global, kInputBus, &recordCallback, sizeof(recordCallback));
+        CheckError(status, "kAudioOutputUnitProperty_SetInputCallback failed");
+    } else {
+        status = AudioUnitSetProperty(unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, kOutputBus, &asbdInfo, sizeof(asbdInfo));
+        CheckError(status, "kAudioUnitProperty_StreamFormat failed");
+        
+        //设置声音输入回掉
+        AURenderCallbackStruct renderCallback;
+        renderCallback.inputProc = inputCallbackFun;
+        renderCallback.inputProcRefCon = (__bridge void *)self;
+        status = AudioUnitSetProperty(unit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, kOutputBus, &renderCallback, sizeof(renderCallback));
+        CheckError(status, "kAudioUnitProperty_SetRenderCallback failed");
+    }
 }
 
 - (AudioStreamBasicDescription)buildAudioStreamBasicDesc:(UInt32)mBitsPerChannel sampleRate:(UInt32)sampleRate channelsPerFrame:(UInt32)channelsPerFrame framesPerPacket:(UInt32)framesPerPacket {
@@ -148,7 +167,13 @@
 
 #pragma mark- Logic
 - (void)start {
-    [self configAudioUnit];
+    if (self.isPlaying ||
+        self.isRecording) {
+        self->readedPacket = 0;
+        [self pause];
+    }
+    
+    [self configAudioUnit:NO];
 
     OSStatus status;
     status = AudioUnitInitialize(unit);
@@ -156,6 +181,7 @@
 
     status = AudioOutputUnitStart(unit);
     CheckError(status, "audioUnit开始失败");
+    self.isPlaying = YES;
 }
 
 - (void)pause {
@@ -168,8 +194,28 @@
 
     status = AudioComponentInstanceDispose(unit);
     CheckError(status, "audioUnit释放失败");
+    self.isPlaying = NO;
+    self.isRecording = NO;
 }
 
+- (void)record {
+    if (self.isPlaying ||
+        self.isRecording) {
+        [self pause];
+    }
+    
+    [self configAudioUnit:YES];
+
+    OSStatus status;
+    status = AudioUnitInitialize(unit);
+    CheckError(status, "AudioUnit初始化失败");
+
+    status = AudioOutputUnitStart(unit);
+    CheckError(status, "audioUnit开始失败");
+    self.isRecording = YES;
+}
+
+#pragma mark-IBAction
 - (IBAction)playClicked:(id)sender {
     [self start];
 }
@@ -178,11 +224,14 @@
     [self pause];
 }
 
+- (IBAction)recordClicked:(id)sender {
+    [self record];
+}
 
 - (IBAction)sliderAction:(id)sender {
     NSSlider *slider = (NSSlider *)sender;
-
     self->readedPacket = slider.floatValue / 100 * self->packetNums;
+    self.progress.stringValue = [NSString stringWithFormat:@"进度：%0.1f", slider.floatValue];
 }
 
 #pragma mark-
@@ -229,7 +278,20 @@ static void CheckStatus(OSStatus status, NSString *message, BOOL fatal) {
     }
 }
 
-static OSStatus outputCallBackFun(    void *                            inRefCon,
+static OSStatus outputCallbackFun(    void *                            inRefCon,
+                    AudioUnitRenderActionFlags *    ioActionFlags,
+                    const AudioTimeStamp *            inTimeStamp,
+                    UInt32                            inBusNumber,
+                    UInt32                            inNumberFrames,
+                    AudioBufferList * __nullable    ioData) {
+    ViewController *strongSelf = (__bridge ViewController *)inRefCon;
+    OSStatus status = AudioUnitRender(strongSelf->unit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, strongSelf->buffList);
+    
+    CheckError(status, "outputCallbackFun failed");
+    return status;
+}
+
+static OSStatus inputCallbackFun(    void *                            inRefCon,
                     AudioUnitRenderActionFlags *    ioActionFlags,
                     const AudioTimeStamp *            inTimeStamp,
                     UInt32                            inBusNumber,
@@ -237,17 +299,21 @@ static OSStatus outputCallBackFun(    void *                            inRefCon
                     AudioBufferList * __nullable    ioData) {
     memset(ioData->mBuffers[0].mData, 0, ioData->mBuffers[0].mDataByteSize);
     
+    
     ViewController *strongSelf = (__bridge ViewController *)inRefCon;
-    strongSelf->buffList->mBuffers[0].mDataByteSize = CONST_BUFFER_SIZE;
-    
-    OSStatus status = AudioConverterFillComplexBuffer(strongSelf->audioConverter, lyInInputDataProc, (__bridge void * _Nullable)(strongSelf), &inNumberFrames, strongSelf->buffList, NULL);
-    if (status) {
-        NSLog(@"转换格式失败 %d", status);
+    if (strongSelf.isPlaying) {
+        strongSelf->buffList->mBuffers[0].mDataByteSize = CONST_BUFFER_SIZE;
+        
+        OSStatus status = AudioConverterFillComplexBuffer(strongSelf->audioConverter, lyInInputDataProc, (__bridge void * _Nullable)(strongSelf), &inNumberFrames, strongSelf->buffList, NULL);
+        if (status) {
+            NSLog(@"转换格式失败 %d", status);
+        }
+        CheckError(status, "inputCallbackFun failed");
+        
+        
+        memcpy(ioData->mBuffers[0].mData, strongSelf->buffList->mBuffers[0].mData, strongSelf->buffList->mBuffers[0].mDataByteSize);
+        ioData->mBuffers[0].mDataByteSize = strongSelf->buffList->mBuffers[0].mDataByteSize;
     }
-    
-    memcpy(ioData->mBuffers[0].mData, strongSelf->buffList->mBuffers[0].mData, strongSelf->buffList->mBuffers[0].mDataByteSize);
-    
-    ioData->mBuffers[0].mDataByteSize = strongSelf->buffList->mBuffers[0].mDataByteSize;
     
     return noErr;
 }
@@ -262,22 +328,20 @@ OSStatus lyInInputDataProc(AudioConverterRef inAudioConverter, UInt32 *ioNumberD
     if (outDataPacketDescription) { // 这里要设置好packetFormat，否则会转码失败
         *outDataPacketDescription = player->audioPacketFormat;
     }
-    
-    
-    if(status) {
-        NSLog(@"读取文件失败");
-    }
+    CheckError(status, "读取文件失败");
     
     if (!status && ioNumberDataPackets > 0) {
         ioData->mBuffers[0].mDataByteSize = byteSize;
         ioData->mBuffers[0].mData = player->convertBuffer;
         player->readedPacket += *ioNumberDataPackets;
         dispatch_async(dispatch_get_main_queue(), ^{
-            //player->_slier.floatValue = player->readedPacket / player->packetNums * 100;
+            player->_slier.floatValue = (player->readedPacket * 1.0f / player->packetNums) * 100;
+            player->_progress.stringValue = [NSString stringWithFormat:@"进度：%0.1f", player->_slier.floatValue];
         });
         return noErr;
     }
     else {
+        player->readedPacket = 0;
         return NO_MORE_DATA;
     }
     
