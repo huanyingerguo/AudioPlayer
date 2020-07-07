@@ -23,6 +23,7 @@
 @property (strong) NSMutableArray *filePathList;
 @property (weak) IBOutlet NSTableView *fileListTableview;
 
+@property (assign) BOOL isChangingProgress;
 @end
 
 @implementation ViewController
@@ -36,8 +37,13 @@
     self.fileListTableview.dataSource = self;
     
     [AudioPlayer sharedInstance].playProgress = ^(long long readPacker, float progress) {
-        self.progress.stringValue = @(progress).stringValue;
+        self.progress.stringValue = [NSString stringWithFormat:@"进度：%0.1f", progress];
+        if (!self.isChangingProgress) {
+            self.slier.floatValue = progress;
+        }
     };
+    [self selectFile];
+    [self.fileListTableview reloadData];
 }
 
 - (void)selectFile {
@@ -53,8 +59,6 @@
     
     [self.filePathList addObject:filePath];
     [self.filePathList addObject:filePath2];
-
-    [[AudioPlayer sharedInstance] setFilePath:filePath];
 }
 
 #pragma mark-IBAction
@@ -77,9 +81,13 @@
 }
 
 - (IBAction)sliderAction:(id)sender {
+    self.isChangingProgress = YES;
     NSSlider *slider = (NSSlider *)sender;
     [AudioPlayer sharedInstance].readedPacket = slider.floatValue / 100 * [AudioPlayer sharedInstance].packetNums;
     self.progress.stringValue = [NSString stringWithFormat:@"进度：%0.1f", slider.floatValue];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        self.isChangingProgress = NO;
+    });
 }
 
 #pragma mark- File Action

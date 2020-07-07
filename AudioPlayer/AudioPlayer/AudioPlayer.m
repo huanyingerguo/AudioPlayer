@@ -69,6 +69,7 @@
 - (void)setFilePath:(NSString *)filePath {
     if (![filePath isEqualToString:_filePath]) {
         _filePath = filePath;
+        self.readedPacket = 0;
         [self prepareForPlayWork];
     }
 }
@@ -134,7 +135,6 @@
 - (void)prepareFileInfo {
     NSURL *fileURL = [NSURL fileURLWithPath:self.filePath];
     AudioFileOpenURL((__bridge CFURLRef)fileURL, kAudioFileReadPermission, 0, &audioFileID);
-    
     
     uint32_t size = sizeof(AudioStreamBasicDescription);
     AudioFileGetProperty(audioFileID, kAudioFilePropertyDataFormat, &size, &audioFileFormat);
