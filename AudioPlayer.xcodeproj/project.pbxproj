@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CA12097424B31217009A9267 /* AudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA12097324B31217009A9267 /* AudioPlayer.m */; };
 		CA287E6124A9D66100A44FC6 /* music_48k-01.wav in Resources */ = {isa = PBXBuildFile; fileRef = CA287E5F24A9D66100A44FC6 /* music_48k-01.wav */; };
 		CA287E6224A9D66100A44FC6 /* 周杰伦 - 晴天.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CA287E6024A9D66100A44FC6 /* 周杰伦 - 晴天.mp3 */; };
 		CAB6035F24A883C1004B313E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CAB6035E24A883C1004B313E /* AppDelegate.m */; };
@@ -36,6 +37,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		CA12097224B31217009A9267 /* AudioPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioPlayer.h; path = AudioPlayer/AudioPlayer.h; sourceTree = "<group>"; };
+		CA12097324B31217009A9267 /* AudioPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AudioPlayer.m; path = AudioPlayer/AudioPlayer.m; sourceTree = "<group>"; };
 		CA287E5F24A9D66100A44FC6 /* music_48k-01.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "music_48k-01.wav"; path = "AudioPlayer/music_48k-01.wav"; sourceTree = "<group>"; };
 		CA287E6024A9D66100A44FC6 /* 周杰伦 - 晴天.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "周杰伦 - 晴天.mp3"; path = "AudioPlayer/周杰伦 - 晴天.mp3"; sourceTree = "<group>"; };
 		CAB6035A24A883C1004B313E /* AudioPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AudioPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -115,6 +118,8 @@
 				CAB6036824A883C4004B313E /* Info.plist */,
 				CAB6036924A883C4004B313E /* main.m */,
 				CAB6036B24A883C4004B313E /* AudioConverter.entitlements */,
+				CA12097224B31217009A9267 /* AudioPlayer.h */,
+				CA12097324B31217009A9267 /* AudioPlayer.m */,
 			);
 			path = AudioPlayer;
 			sourceTree = "<group>";
@@ -271,6 +276,7 @@
 				CAB6036224A883C1004B313E /* ViewController.m in Sources */,
 				CAB6036A24A883C4004B313E /* main.m in Sources */,
 				CAB6035F24A883C1004B313E /* AppDelegate.m in Sources */,
+				CA12097424B31217009A9267 /* AudioPlayer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
