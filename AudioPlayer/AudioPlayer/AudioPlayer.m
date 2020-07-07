@@ -255,8 +255,25 @@
     return asbdInfo;
 }
 
+- (void)writePCMData:(Byte *)buffer size:(int)size {
+    static FILE *file = NULL;
+    NSString *path = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    path = [path stringByAppendingString:@"/record.pcm"];
+    if(![[NSFileManager defaultManager] fileExistsAtPath:path]) {
+        BOOL res = [[NSFileManager defaultManager] createFileAtPath:path contents:nil attributes:nil];
+        if (!res) {
+            NSLog(@"创建文件失败：path=%@", path);
+        }
+    }
+    
+    if (!file) {
+        file = fopen(path.UTF8String, "w");
+    }
+    
+    fwrite(buffer, size, 1, file);
+}
 
-#pragma mark- Callback Method
+#pragma mark- Statistic Method
 static void CheckError(OSStatus error, const char *operation)
 {
 #if MAC
@@ -300,6 +317,7 @@ static void CheckStatus(OSStatus status, NSString *message, BOOL fatal) {
     }
 }
 
+#pragma mark- Callback Method
 static OSStatus RecordCallback(    void *                            inRefCon,
                                   AudioUnitRenderActionFlags *    ioActionFlags,
                                   const AudioTimeStamp *            inTimeStamp,
@@ -310,6 +328,10 @@ static OSStatus RecordCallback(    void *                            inRefCon,
     OSStatus status = AudioUnitRender(strongSelf->unit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, strongSelf->buffList);
     
     CheckError(status, "outputCallbackFun failed");
+    
+    NSLog(@"Record Size = %d", strongSelf->buffList->mBuffers[0].mDataByteSize);
+    [strongSelf writePCMData:strongSelf->buffList->mBuffers[0].mData size:strongSelf->buffList->mBuffers[0].mDataByteSize];
+    
     return status;
 }
 

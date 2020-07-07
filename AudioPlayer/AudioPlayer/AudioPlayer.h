@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // readPacker: 读取的包数目
 // progress:杜去的进度（如50%）
-typedef void (^PlayProgress)(int readPacker, float progress);
+typedef void (^PlayProgress)(long long readPacker, float progress);
 
 @interface AudioPlayer : NSObject
 + (instancetype)sharedInstance;
