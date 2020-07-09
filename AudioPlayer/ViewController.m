@@ -53,12 +53,15 @@
     //AudioFile
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"music_48k-01" ofType:@"wav"];
     NSString *filePath2 = [[NSBundle mainBundle] pathForResource:@"周杰伦 - 晴天" ofType:@"mp3"];
-    
+    NSString *filePath3 = [[NSBundle mainBundle] pathForResource:@"output" ofType:@"pcm"];
+
     [self.fileList addObject:filePath.lastPathComponent];
     [self.fileList addObject:filePath2.lastPathComponent];
-    
+    [self.fileList addObject:filePath3.lastPathComponent];
+
     [self.filePathList addObject:filePath];
     [self.filePathList addObject:filePath2];
+    [self.filePathList addObject:filePath3];
 }
 
 #pragma mark-IBAction

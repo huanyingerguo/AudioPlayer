@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		CA12097424B31217009A9267 /* AudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA12097324B31217009A9267 /* AudioPlayer.m */; };
+		CA12097B24B4B7C1009A9267 /* output.pcm in Resources */ = {isa = PBXBuildFile; fileRef = CA12097A24B4B7C1009A9267 /* output.pcm */; };
 		CA287E6124A9D66100A44FC6 /* music_48k-01.wav in Resources */ = {isa = PBXBuildFile; fileRef = CA287E5F24A9D66100A44FC6 /* music_48k-01.wav */; };
 		CA287E6224A9D66100A44FC6 /* 周杰伦 - 晴天.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CA287E6024A9D66100A44FC6 /* 周杰伦 - 晴天.mp3 */; };
 		CAB6035F24A883C1004B313E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CAB6035E24A883C1004B313E /* AppDelegate.m */; };
@@ -39,6 +40,7 @@
 /* Begin PBXFileReference section */
 		CA12097224B31217009A9267 /* AudioPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioPlayer.h; path = AudioPlayer/AudioPlayer.h; sourceTree = "<group>"; };
 		CA12097324B31217009A9267 /* AudioPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AudioPlayer.m; path = AudioPlayer/AudioPlayer.m; sourceTree = "<group>"; };
+		CA12097A24B4B7C1009A9267 /* output.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; name = output.pcm; path = AudioPlayer/output.pcm; sourceTree = "<group>"; };
 		CA287E5F24A9D66100A44FC6 /* music_48k-01.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "music_48k-01.wav"; path = "AudioPlayer/music_48k-01.wav"; sourceTree = "<group>"; };
 		CA287E6024A9D66100A44FC6 /* 周杰伦 - 晴天.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "周杰伦 - 晴天.mp3"; path = "AudioPlayer/周杰伦 - 晴天.mp3"; sourceTree = "<group>"; };
 		CAB6035A24A883C1004B313E /* AudioPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AudioPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -87,6 +89,7 @@
 		CAB6035124A883C1004B313E = {
 			isa = PBXGroup;
 			children = (
+				CA12097A24B4B7C1009A9267 /* output.pcm */,
 				CA287E6024A9D66100A44FC6 /* 周杰伦 - 晴天.mp3 */,
 				CA287E5F24A9D66100A44FC6 /* music_48k-01.wav */,
 				CAB6035C24A883C1004B313E /* AudioPlayer */,
@@ -248,6 +251,7 @@
 				CAB6036424A883C4004B313E /* Assets.xcassets in Resources */,
 				CA287E6124A9D66100A44FC6 /* music_48k-01.wav in Resources */,
 				CA287E6224A9D66100A44FC6 /* 周杰伦 - 晴天.mp3 in Resources */,
+				CA12097B24B4B7C1009A9267 /* output.pcm in Resources */,
 				CAB6036724A883C4004B313E /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

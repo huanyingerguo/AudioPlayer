@@ -60,14 +60,19 @@
 
 - (void)prepareForPlayWork {
     [self prepareFileInfo];
-    [self prepareAudioConverter];
-    [self prepareForPlay];
+    if (![self isFilePCMType]) {
+        [self prepareAudioConverter];
+        [self prepareForPlay];
+    } else {
+        [self prepareReadPCMFile];
+    }
 }
 
 
 #pragma mark- Logic
 - (void)setFilePath:(NSString *)filePath {
-    if (![filePath isEqualToString:_filePath]) {
+    if (![filePath isEqualToString:_filePath] ||
+        [self isFilePCMType]) {
         _filePath = filePath;
         self.readedPacket = 0;
         [self prepareForPlayWork];
@@ -112,6 +117,7 @@
         [self pause];
     }
     
+    [self prepareForRecord];
     [self configAudioUnit:YES];
     
     OSStatus status;
@@ -132,6 +138,13 @@
 }
 
 #pragma mark- Private Method
+- (void) prepareReadPCMFile {
+    NSDictionary *fileInfo = [[NSFileManager defaultManager] attributesOfItemAtPath:self.filePath error:nil];
+    self.packetNums = [fileInfo fileSize];
+    
+    self.readedPacket = 0;
+}
+
 - (void)prepareFileInfo {
     NSURL *fileURL = [NSURL fileURLWithPath:self.filePath];
     AudioFileOpenURL((__bridge CFURLRef)fileURL, kAudioFileReadPermission, 0, &audioFileID);
@@ -186,6 +199,20 @@
     self->convertBuffer = malloc(CONST_BUFFER_SIZE);
 }
 
+- (void)prepareForRecord {
+    if (self->buffList) {
+        for (int i = 0; i < self->buffList->mNumberBuffers; i++) {
+            if (self->buffList->mBuffers[0].mData) {
+                free(self->buffList->mBuffers[0].mData);
+                self->buffList->mBuffers[0].mData = NULL;
+            }
+        }
+        free(self->buffList);
+        self->buffList = nil;
+    }
+    
+    self->buffList = [[self class] allocAudioBufferListWithMDataByteSize:CONST_BUFFER_SIZE mNumberChannels:1 mNumberBuffers:1];
+}
 
 - (void)configAudioUnit:(BOOL)isEnableRecord {
     AudioComponentDescription desc;
@@ -218,10 +245,25 @@
         //启动录制
         UInt32 flagIn = 1;
         status = AudioUnitSetProperty(unit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input, kInputBus, &flagIn, sizeof(flagIn));
-      
+        CheckError(status, "kAudioOutputUnitProperty_EnableIO failed");
+        
         status = AudioUnitSetProperty(unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, kInputBus, &audioOutputFormat, sizeof(audioOutputFormat));
         CheckError(status, "kAudioUnitProperty_StreamFormat failed");
+      
+#if 1
+        const UInt32 one = 1;
+        const UInt32 zero = 0;
+
+        status = AudioUnitSetProperty(unit, kAUVoiceIOProperty_BypassVoiceProcessing, kAudioUnitScope_Global, kInputBus, &one, sizeof(zero));
+        CheckError(status, "kAUVoiceIOProperty_VoiceProcessingEnableAGC failed");
         
+        status = AudioUnitSetProperty(unit, kAUVoiceIOProperty_VoiceProcessingEnableAGC, kAudioUnitScope_Global, kInputBus, &zero, sizeof(zero));
+        CheckError(status, "kAUVoiceIOProperty_VoiceProcessingEnableAGC failed");
+
+//        status = AudioUnitSetProperty(unit, kAUVoiceIOProperty_MuteOutput, kAudioUnitScope_Global, kInputBus, &zero, sizeof(zero));
+//        CheckError(status, "kAUVoiceIOProperty_MuteOutput failed");
+#endif
+
         //设置声音录制回调
         AURenderCallbackStruct recordCallback;
         recordCallback.inputProc = RecordCallback;
@@ -271,6 +313,15 @@
     }
     
     fwrite(buffer, size, 1, file);
+}
+
+- (BOOL)isFilePCMType {
+    NSString *type = [[self.filePath lastPathComponent] pathExtension];
+    if ([type isEqualToString:@"pcm"]) {
+        return YES;
+    }
+    
+    return NO;
 }
 
 #pragma mark- Statistic Method
@@ -324,13 +375,13 @@ static OSStatus RecordCallback(    void *                            inRefCon,
                                   UInt32                            inBusNumber,
                                   UInt32                            inNumberFrames,
                                   AudioBufferList * __nullable    ioData) {
-    AudioPlayer *strongSelf = (__bridge AudioPlayer *)inRefCon;
-    OSStatus status = AudioUnitRender(strongSelf->unit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, strongSelf->buffList);
+    AudioPlayer *player = (__bridge AudioPlayer *)inRefCon;
+    OSStatus status = AudioUnitRender(player->unit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, player->buffList);
     
     CheckError(status, "outputCallbackFun failed");
     
-    NSLog(@"Record Size = %d", strongSelf->buffList->mBuffers[0].mDataByteSize);
-    [strongSelf writePCMData:strongSelf->buffList->mBuffers[0].mData size:strongSelf->buffList->mBuffers[0].mDataByteSize];
+    NSLog(@"Record Size = %d", player->buffList->mBuffers[0].mDataByteSize);
+    [player writePCMData:player->buffList->mBuffers[0].mData size:player->buffList->mBuffers[0].mDataByteSize];
     
     return status;
 }
@@ -342,24 +393,49 @@ static OSStatus inputCallbackFun(    void *                            inRefCon,
                                  UInt32                            inNumberFrames,
                                  AudioBufferList * __nullable    ioData) {
     memset(ioData->mBuffers[0].mData, 0, ioData->mBuffers[0].mDataByteSize);
+    AudioPlayer *player = (__bridge AudioPlayer *)inRefCon;
+    if ([player isFilePCMType]) {
+        if (player.readedPacket < player.packetNums) {
+            NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:player.filePath];
+            NSInteger bytes = CONST_BUFFER_SIZE < ioData->mBuffers[0].mDataByteSize ? CONST_BUFFER_SIZE : ioData->mBuffers[0].mDataByteSize;
+            [handle seekToFileOffset:player.readedPacket];
+            NSData *data = [handle readDataOfLength:bytes];
+            bytes = [data length];
+            memcpy(ioData->mBuffers[0].mData, [data bytes], ioData->mBuffers[0].mDataByteSize);
+            
+            player.readedPacket += bytes;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (player.playProgress) {
+                    player.playProgress(player.readedPacket, (player.readedPacket * 1.0f / player.packetNums) * 100);
+                }
+            });
+            return noErr;
+        } else {
+            NSLog(@"文件读取结束：filePath=%@", player.filePath);
+            [player pause];
+            return -1;
+        }
+    }
     
+    if (!player->buffList) {
+        return -1;
+    }
     
-    AudioPlayer *strongSelf = (__bridge AudioPlayer *)inRefCon;
-    if (strongSelf.isPlaying) {
-        strongSelf->buffList->mBuffers[0].mDataByteSize = CONST_BUFFER_SIZE;
+    if (player.isPlaying) {
+        player->buffList->mBuffers[0].mDataByteSize = CONST_BUFFER_SIZE;
         
-        OSStatus status = AudioConverterFillComplexBuffer(strongSelf->audioConverter, lyInInputDataProc, (__bridge void * _Nullable)(strongSelf), &inNumberFrames, strongSelf->buffList, NULL);
+        OSStatus status = AudioConverterFillComplexBuffer(player->audioConverter, lyInInputDataProc, (__bridge void * _Nullable)(player), &inNumberFrames, player->buffList, NULL);
         if (status) {
             CheckError(status, "inputCallbackFun failed");
             return status;
         }
         
-        memcpy(ioData->mBuffers[0].mData, strongSelf->buffList->mBuffers[0].mData, strongSelf->buffList->mBuffers[0].mDataByteSize);
-        ioData->mBuffers[0].mDataByteSize = strongSelf->buffList->mBuffers[0].mDataByteSize;
+        memcpy(ioData->mBuffers[0].mData, player->buffList->mBuffers[0].mData, player->buffList->mBuffers[0].mDataByteSize);
+        ioData->mBuffers[0].mDataByteSize = player->buffList->mBuffers[0].mDataByteSize;
     } else {
-        if (strongSelf->buffList->mBuffers[0].mDataByteSize > 1000) {
-            memcpy(ioData->mBuffers[0].mData, strongSelf->buffList->mBuffers[0].mData, strongSelf->buffList->mBuffers[0].mDataByteSize);
-            ioData->mBuffers[0].mDataByteSize = strongSelf->buffList->mBuffers[0].mDataByteSize;
+        if (player->buffList->mBuffers[0].mDataByteSize > 1000) {
+            memcpy(ioData->mBuffers[0].mData, player->buffList->mBuffers[0].mData, player->buffList->mBuffers[0].mDataByteSize);
+            ioData->mBuffers[0].mDataByteSize = player->buffList->mBuffers[0].mDataByteSize;
         }
     }
     
