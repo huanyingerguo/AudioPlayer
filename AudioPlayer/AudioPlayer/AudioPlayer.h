@@ -23,11 +23,17 @@ typedef void (^PlayProgress)(long long readPacker, float progress);
 @property (assign) BOOL isRecording;
 @property (assign) BOOL isPlaying;
 
+@property (nonatomic, assign) int sampleRate;
+@property (nonatomic, assign) int bitDepth;
+@property (nonatomic, assign) int channelCount;
+
 - (NSString *)getAudioStreamBasicDescriptionForInput;
 - (NSString *)getAudioStreamBasicDescriptionForOutput;
 - (void)play;
 - (void)pause;
 - (void)record;
+
+- (BOOL)isFilePCMType:(NSString *)filePath;
 @end
 
 NS_ASSUME_NONNULL_END

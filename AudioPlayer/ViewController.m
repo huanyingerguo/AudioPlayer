@@ -19,9 +19,13 @@
 @property (weak) IBOutlet NSTextField *progress;
 @property (weak) IBOutlet NSButton *recordBtn;
 
-@property (strong) NSMutableArray *fileList;
 @property (strong) NSMutableArray *filePathList;
 @property (weak) IBOutlet NSTableView *fileListTableview;
+
+//音频输出参数
+@property (weak) IBOutlet NSTextField *sampleRate;
+@property (weak) IBOutlet NSTextField *bitDepth;
+@property (weak) IBOutlet NSTextField *channelCount;
 
 @property (assign) BOOL isChangingProgress;
 @end
@@ -31,7 +35,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.fileList = [NSMutableArray arrayWithCapacity:1];
     self.filePathList = [NSMutableArray arrayWithCapacity:1];
     self.fileListTableview.delegate = self;
     self.fileListTableview.dataSource = self;
@@ -42,12 +45,11 @@
             self.slier.floatValue = progress;
         }
     };
-    [self selectFile];
+    [self resetSelectedFiles];
     [self.fileListTableview reloadData];
 }
 
-- (void)selectFile {
-    [self.fileList removeAllObjects];
+- (void)resetSelectedFiles {
     [self.filePathList removeAllObjects];
 
     //AudioFile
@@ -55,24 +57,47 @@
     NSString *filePath2 = [[NSBundle mainBundle] pathForResource:@"周杰伦 - 晴天" ofType:@"mp3"];
     NSString *filePath3 = [[NSBundle mainBundle] pathForResource:@"output" ofType:@"pcm"];
 
-    [self.fileList addObject:filePath.lastPathComponent];
-    [self.fileList addObject:filePath2.lastPathComponent];
-    [self.fileList addObject:filePath3.lastPathComponent];
-
-    [self.filePathList addObject:filePath];
-    [self.filePathList addObject:filePath2];
-    [self.filePathList addObject:filePath3];
+    [self.filePathList addObjectsFromArray:@[filePath, filePath2, filePath3]];
 }
 
 #pragma mark-IBAction
 - (IBAction)playClicked:(id)sender {
     if (self.fileListTableview.selectedRow >= 0) {
         NSString *path = [self.filePathList objectAtIndex:self.fileListTableview.selectedRow];
+        if ([[AudioPlayer sharedInstance] isFilePCMType:path]) {
+            [self resetDefaultOutputParamets:path];
+        }
         [[AudioPlayer sharedInstance] setFilePath:path];
         [[AudioPlayer sharedInstance] play];
         self.inputDesc.stringValue = [[AudioPlayer sharedInstance] getAudioStreamBasicDescriptionForInput];
         self.outputDesc.stringValue = [[AudioPlayer sharedInstance] getAudioStreamBasicDescriptionForOutput];
     }
+}
+
+- (void)resetDefaultOutputParamets:(NSString *)path {
+    NSString *sampleRate = [self sampleRateFromFileName:path.lastPathComponent];
+    if (sampleRate.length) {
+        self.sampleRate.stringValue = sampleRate;
+        self.channelCount.stringValue = @"1";
+        self.bitDepth.stringValue = @"16";
+    } else {
+        self.sampleRate.stringValue = @"44100";
+        self.channelCount.stringValue = @"1";
+        self.bitDepth.stringValue = @"32";
+    }
+    
+    [AudioPlayer sharedInstance].sampleRate = self.sampleRate.stringValue.intValue;
+    [AudioPlayer sharedInstance].channelCount = self.channelCount.stringValue.intValue;
+    [AudioPlayer sharedInstance].bitDepth = self.bitDepth.stringValue.intValue;
+}
+
+- (NSString *)sampleRateFromFileName:(NSString *)inputFileName {
+    NSArray *nameArray = [inputFileName componentsSeparatedByString:@"_"];
+    if (nameArray.count < 8) {
+        return @"";
+    }
+    NSString *sample = [nameArray objectAtIndex:5];
+    return sample;
 }
 
 - (IBAction)pauseClicked:(id)sender {
@@ -95,7 +120,7 @@
 
 #pragma mark- File Action
 - (IBAction)clickLoadFileBtn:(NSButton *)sender {
-    [self selectFile];
+    [self resetSelectedFiles];
     
     NSOpenPanel *panel = [NSOpenPanel openPanel];
     panel.allowsMultipleSelection = YES;
@@ -107,11 +132,7 @@
                     return;
                 }
                 
-                if (!self.fileList) {
-                    self.fileList = [NSMutableArray array];
-                }
-                [self.fileList addObject:filePath.lastPathComponent];
-                [self.filePathList addObject:filePath];
+                [self.filePathList insertObject:filePath atIndex:0];
             }
             
             [self.fileListTableview reloadData];
@@ -122,7 +143,7 @@
 
 #pragma mark - table data souutce delegate
 - (NSInteger) numberOfRowsInTableView:(NSTableView *)tableView {
-    return self.fileList.count;
+    return self.filePathList.count;
 }
 
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row {
@@ -130,13 +151,23 @@
 }
 
 - (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row {
+    NSString *path = [self.filePathList objectAtIndex:row];
+    if ([[AudioPlayer sharedInstance] isFilePCMType:path]) {
+        [self.sampleRate setEnabled:YES];
+        [self.channelCount setEnabled:YES];
+        [self.bitDepth setEnabled:YES];
+    } else {
+        [self.sampleRate setEnabled:NO];
+        [self.channelCount setEnabled:NO];
+        [self.bitDepth setEnabled:NO];
+    }
     return YES;
 }
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
-    if (self.fileList.count > row) {
+    if (self.filePathList.count > row) {
         NSTableCellView *cellView = [self.fileListTableview makeViewWithIdentifier:@"fileCell" owner:self];
-        cellView.textField.stringValue = [self.fileList objectAtIndex:row];
+        cellView.textField.stringValue = [[self.filePathList objectAtIndex:row] lastPathComponent];
         return cellView;
     }
     

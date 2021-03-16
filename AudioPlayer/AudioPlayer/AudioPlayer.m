@@ -18,6 +18,9 @@
 
 #define MAC_PLAT 1
 
+#define BIT_DEPTH 32
+#define SAMPLE_RATE 44100
+#define CHANNEL_COUNT 1
 
 @interface AudioPlayer ()
 {
@@ -53,16 +56,43 @@
     self = [super init];
     if (self) {
         self.readedPacket = 0;
+        self.bitDepth = BIT_DEPTH;
+        self.channelCount = CHANNEL_COUNT;
+        self.sampleRate = SAMPLE_RATE;
     }
     
     return self;
 }
 
+- (void)setBitDepth:(int)bitDepth {
+    if (bitDepth > 0) {
+        _bitDepth = bitDepth;
+    } else {
+        _bitDepth = BIT_DEPTH;
+    }
+}
+
+- (void)setChannelCount:(int)channelCount {
+    if (channelCount > 0) {
+        _channelCount = channelCount;
+    } else {
+        _channelCount = CHANNEL_COUNT;
+    }
+}
+
+- (void)setSampleRate:(int)sampleRate {
+    if (sampleRate > 0) {
+        _sampleRate = sampleRate;
+    } else {
+        _sampleRate = SAMPLE_RATE;
+    }
+}
+
 - (void)prepareForPlayWork {
     [self prepareFileInfo];
-    if (![self isFilePCMType]) {
+    if (![self isFilePCMType:self.filePath]) {
         [self prepareAudioConverter];
-        [self prepareForPlay];
+        [self presetOutputFormatParameters];
     } else {
         [self prepareReadPCMFile];
     }
@@ -71,8 +101,7 @@
 
 #pragma mark- Logic
 - (void)setFilePath:(NSString *)filePath {
-    if (![filePath isEqualToString:_filePath] ||
-        [self isFilePCMType]) {
+    if (![filePath isEqualToString:_filePath]) {
         _filePath = filePath;
         self.readedPacket = 0;
         [self prepareForPlayWork];
@@ -164,13 +193,11 @@
         AudioConverterDispose(audioConverter);
     }
     
+    //对于转PCM的场景：位深 采样率 通道数固定。
     AudioStreamBasicDescription outputFormat = [self buildAudioStreamBasicDesc:32 sampleRate:44100 channelsPerFrame:1 framesPerPacket:1];
-    
     OSStatus status = AudioConverterNew(&audioFileFormat, &outputFormat, &audioConverter);
     CheckError(status, "AudioConverterNew failed");
-}
-
-- (void)prepareForPlay {
+    
     if (self->audioPacketFormat) {
         free(self->audioPacketFormat);
         self->audioPacketFormat = nil;
@@ -193,10 +220,14 @@
     }
     
     self->audioPacketFormat = malloc(sizeof(AudioStreamPacketDescription) * (CONST_BUFFER_SIZE / maximuFramePerPacket + 1));
-    
     self->buffList = [[self class] allocAudioBufferListWithMDataByteSize:CONST_BUFFER_SIZE mNumberChannels:1 mNumberBuffers:1];
-    
     self->convertBuffer = malloc(CONST_BUFFER_SIZE);
+}
+
+- (void)presetOutputFormatParameters {
+    self.bitDepth = BIT_DEPTH;
+    self.channelCount = CHANNEL_COUNT;
+    self.sampleRate = SAMPLE_RATE;
 }
 
 - (void)prepareForRecord {
@@ -238,16 +269,15 @@
     OSStatus status = AudioComponentInstanceNew(outputComponent, &unit);
     CheckError(status, "AudioComponentInstanceNew failed");
     
-    //设置输入流格式
-    audioOutputFormat = [self buildAudioStreamBasicDesc:32 sampleRate:44100 channelsPerFrame:1 framesPerPacket:1];
-    
     if (isEnableRecord) {
+        AudioStreamBasicDescription audioRecordFormat = [self buildAudioStreamBasicDesc:BIT_DEPTH sampleRate:SAMPLE_RATE channelsPerFrame:CHANNEL_COUNT framesPerPacket:1];
+
         //启动录制
         UInt32 flagIn = 1;
         status = AudioUnitSetProperty(unit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input, kInputBus, &flagIn, sizeof(flagIn));
         CheckError(status, "kAudioOutputUnitProperty_EnableIO failed");
         
-        status = AudioUnitSetProperty(unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, kInputBus, &audioOutputFormat, sizeof(audioOutputFormat));
+        status = AudioUnitSetProperty(unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, kInputBus, &audioRecordFormat, sizeof(audioRecordFormat));
         CheckError(status, "kAudioUnitProperty_StreamFormat failed");
       
 #if 1
@@ -271,6 +301,9 @@
         status = AudioUnitSetProperty(unit, kAudioOutputUnitProperty_SetInputCallback, kAudioUnitScope_Global, kInputBus, &recordCallback, sizeof(recordCallback));
         CheckError(status, "kAudioOutputUnitProperty_SetInputCallback failed");
     } else {
+        //设置输入流格式
+        audioOutputFormat = [self buildAudioStreamBasicDesc:self.bitDepth sampleRate:self.sampleRate channelsPerFrame:self.channelCount framesPerPacket:1];
+        
         status = AudioUnitSetProperty(unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, kOutputBus, &audioOutputFormat, sizeof(audioOutputFormat));
         CheckError(status, "kAudioUnitProperty_StreamFormat failed");
         
@@ -315,8 +348,8 @@
     fwrite(buffer, size, 1, file);
 }
 
-- (BOOL)isFilePCMType {
-    NSString *type = [[self.filePath lastPathComponent] pathExtension];
+- (BOOL)isFilePCMType:(NSString *)filePath {
+    NSString *type = [[filePath lastPathComponent] pathExtension];
     if ([type isEqualToString:@"pcm"]) {
         return YES;
     }
@@ -394,7 +427,7 @@ static OSStatus inputCallbackFun(    void *                            inRefCon,
                                  AudioBufferList * __nullable    ioData) {
     memset(ioData->mBuffers[0].mData, 0, ioData->mBuffers[0].mDataByteSize);
     AudioPlayer *player = (__bridge AudioPlayer *)inRefCon;
-    if ([player isFilePCMType]) {
+    if ([player isFilePCMType:player.filePath]) {
         if (player.readedPacket < player.packetNums) {
             NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:player.filePath];
             NSInteger bytes = CONST_BUFFER_SIZE < ioData->mBuffers[0].mDataByteSize ? CONST_BUFFER_SIZE : ioData->mBuffers[0].mDataByteSize;
@@ -410,11 +443,15 @@ static OSStatus inputCallbackFun(    void *                            inRefCon,
                 }
             });
             return noErr;
-        } else {
-            NSLog(@"文件读取结束：filePath=%@", player.filePath);
-            [player pause];
+        } else { //延迟防止过早关闭，导致crash
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                NSLog(@"文件读取结束：filePath=%@", player.filePath);
+                [player pause];
+            });
             return -1;
         }
+        
+        return 0;
     }
     
     if (!player->buffList) {
