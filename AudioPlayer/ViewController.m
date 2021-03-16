@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "AudioPlayer.h"
+#import "DecrpytFile.h"
 
 @interface ViewController () <NSTableViewDelegate, NSTableViewDataSource>
 @property (weak) IBOutlet NSTextField *inputDesc;
@@ -127,9 +128,20 @@
     [panel beginSheetModalForWindow:self.view.window completionHandler:^(NSModalResponse result) {
         if (result == NSModalResponseOK) {
             for( NSURL* url in panel.URLs ){
-                __block  NSString * filePath = url.path;
+                NSString * filePath = url.path;
                 if (filePath == nil ) {
                     return;
+                }
+                
+                if ([filePath.lastPathComponent.pathExtension isEqualToString:@"dat"]) {
+                    NSError *err;
+                    NSString *tempPath = [DecrpytFile decode:filePath error:&err];
+                    if (err) {
+                        self.inputDesc.stringValue = err.localizedDescription;
+                        continue;
+                    }
+                    
+                    filePath = tempPath;
                 }
                 
                 [self.filePathList insertObject:filePath atIndex:0];

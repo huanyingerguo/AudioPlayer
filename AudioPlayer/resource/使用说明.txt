@@ -1,0 +1,2 @@
+使用实例：
+E:\codec\cryt\crypt_tool\Release\crypt_tool.exe -input=E:\1.dat -output=E:\1.pcm -sample=48000 -key=5b62
