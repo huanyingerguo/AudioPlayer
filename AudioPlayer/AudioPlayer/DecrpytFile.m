@@ -26,8 +26,7 @@
     NSString *sample = [nameArray objectAtIndex:5];
     NSString *key = [nameArray lastObject];
     
-    NSString *outputFileName = [inputFileName stringByAppendingString:@".pcm"];
-    NSString *outputFilepath = [inputFilePath stringByAppendingPathComponent:outputFileName];
+    NSString *outputFilepath = [self mapInputFileToDestinationFile:filePath byExtention:@".pcm"];
     
     NSString *script = [NSString stringWithFormat:@"%@ -input=%@ -output=%@ -sample=%@ -key=%@",
                         crypt_tool,
@@ -65,6 +64,15 @@
     NSData *data = [file readDataToEndOfFile];
     NSString *output = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     return output;
+}
+
++ (NSString *)mapInputFileToDestinationFile:(NSString *)filePath byExtention:(NSString *)extention {
+    NSString *inputFilePath = [filePath stringByDeletingLastPathComponent];
+    NSString *inputFileName = [[filePath lastPathComponent] stringByDeletingPathExtension];
+    
+    NSString *outputFileName = [inputFileName stringByAppendingString:extention];
+    NSString *outputFilepath = [inputFilePath stringByAppendingPathComponent:outputFileName];
+    return outputFilepath;
 }
 
 @end

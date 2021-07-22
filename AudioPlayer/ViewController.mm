@@ -9,6 +9,7 @@
 #import "ViewController.h"
 #import "AudioPlayer.h"
 #import "DecrpytFile.h"
+#import "AudioFileConvert.h"
 
 @interface ViewController () <NSTableViewDelegate, NSTableViewDataSource>
 @property (weak) IBOutlet NSTextField *inputDesc;
@@ -55,10 +56,19 @@
 
     //AudioFile
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"music_48k-01" ofType:@"wav"];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+        [self.filePathList addObject:filePath];
+    }
+    
     NSString *filePath2 = [[NSBundle mainBundle] pathForResource:@"周杰伦 - 晴天" ofType:@"mp3"];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:filePath2]) {
+        [self.filePathList addObject:filePath2];
+    }
+    
     NSString *filePath3 = [[NSBundle mainBundle] pathForResource:@"output" ofType:@"pcm"];
-
-    [self.filePathList addObjectsFromArray:@[filePath, filePath2, filePath3]];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:filePath3]) {
+        [self.filePathList addObject:filePath3];
+    }
 }
 
 #pragma mark-IBAction
@@ -102,11 +112,11 @@
 }
 
 - (IBAction)pauseClicked:(id)sender {
-     [[AudioPlayer sharedInstance] pause];
+    [[AudioPlayer sharedInstance] pause];
 }
 
 - (IBAction)recordClicked:(id)sender {
-     [[AudioPlayer sharedInstance] record];
+    [[AudioPlayer sharedInstance] record];
 }
 
 - (IBAction)sliderAction:(id)sender {
@@ -117,6 +127,46 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         self.isChangingProgress = NO;
     });
+}
+
+- (IBAction)toWaveClicked:(id)sender {
+    NSString *filePath = [self.filePathList objectAtIndex:self.fileListTableview.selectedRow];
+    if ([[AudioPlayer sharedInstance] isFilePCMType:filePath]) {
+        NSString *destination = [DecrpytFile mapInputFileToDestinationFile:filePath byExtention:@".wav"];
+        const char *pcm_file = [filePath cStringUsingEncoding:NSUTF8StringEncoding];
+        const char *wav_file = [destination cStringUsingEncoding:NSUTF8StringEncoding];
+        
+        audioFMT fmt;
+        NSString *sampleRate = [self sampleRateFromFileName:filePath.lastPathComponent];
+        if (sampleRate.length) {
+            fmt.nSampleRate = [sampleRate integerValue];
+            fmt.nChannleNumber = 1;
+            fmt.nBitsPerSample = 16;
+        } else {
+            fmt.nSampleRate = 44100;
+            fmt.nChannleNumber = 1;
+            fmt.nBitsPerSample = 32;
+        }
+        
+        int res = a_law_pcm_to_wav2(pcm_file, wav_file, fmt);
+        if (res) {
+            NSError *err = [NSError errorWithDomain:@"转换失败" code:-1 userInfo:nil];
+            NSAlert *alert = [NSAlert alertWithError:err];
+            [alert runModal];
+        } else {
+            NSAlert *alert = [[NSAlert alloc] init];
+            alert.messageText = @"转换成功";
+            [alert runModal];
+            [self localPathClicked:destination];
+        }
+        NSLog(@"转换结果:res=%d", res);
+    }
+}
+
+- (IBAction)localPathClicked:(id)sender {
+    NSString *filePath = [self.filePathList objectAtIndex:self.fileListTableview.selectedRow];
+    NSURL *fileURL = [NSURL fileURLWithPath:filePath];
+    [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[fileURL]];
 }
 
 #pragma mark- File Action
