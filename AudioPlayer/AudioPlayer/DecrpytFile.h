@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface DecrpytFile : NSObject
 
 + (NSString *)decode:(NSString *)filePath error:(NSError **)error;
++ (NSString *)mapInputFileToDestinationFile:(NSString *)filePath byExtention:(NSString *)extention;
 @end
 
 NS_ASSUME_NONNULL_END
