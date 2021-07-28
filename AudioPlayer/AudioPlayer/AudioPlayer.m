@@ -270,8 +270,13 @@
     CheckError(status, "AudioComponentInstanceNew failed");
     
     if (isEnableRecord) {
+        // get hardware device format
+        AudioStreamBasicDescription _audioRecordFormat;
+        UInt32 property_size = sizeof(AudioStreamBasicDescription);;
+        status = AudioUnitGetProperty(unit, kAudioUnitProperty_StreamFormat,
+            kAudioUnitScope_Input, 1, &_audioRecordFormat, &property_size);
+        
         AudioStreamBasicDescription audioRecordFormat = [self buildAudioStreamBasicDesc:BIT_DEPTH sampleRate:SAMPLE_RATE channelsPerFrame:CHANNEL_COUNT framesPerPacket:1];
-
         //启动录制
         UInt32 flagIn = 1;
         status = AudioUnitSetProperty(unit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input, kInputBus, &flagIn, sizeof(flagIn));
@@ -285,9 +290,9 @@
         const UInt32 zero = 0;
 
         status = AudioUnitSetProperty(unit, kAUVoiceIOProperty_BypassVoiceProcessing, kAudioUnitScope_Global, kInputBus, &one, sizeof(zero));
-        CheckError(status, "kAUVoiceIOProperty_VoiceProcessingEnableAGC failed");
+        CheckError(status, "kAUVoiceIOProperty_BypassVoiceProcessing failed");
         
-        status = AudioUnitSetProperty(unit, kAUVoiceIOProperty_VoiceProcessingEnableAGC, kAudioUnitScope_Global, kInputBus, &zero, sizeof(zero));
+        status = AudioUnitSetProperty(unit, kAUVoiceIOProperty_VoiceProcessingEnableAGC, kAudioUnitScope_Global, kInputBus, &one, sizeof(zero));
         CheckError(status, "kAUVoiceIOProperty_VoiceProcessingEnableAGC failed");
 
 //        status = AudioUnitSetProperty(unit, kAUVoiceIOProperty_MuteOutput, kAudioUnitScope_Global, kInputBus, &zero, sizeof(zero));

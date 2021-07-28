@@ -157,14 +157,20 @@
             NSAlert *alert = [[NSAlert alloc] init];
             alert.messageText = @"转换成功";
             [alert runModal];
-            [self localPathClicked:destination];
+            [self openFilePath:destination];
         }
         NSLog(@"转换结果:res=%d", res);
     }
 }
 
 - (IBAction)localPathClicked:(id)sender {
-    NSString *filePath = [self.filePathList objectAtIndex:self.fileListTableview.selectedRow];
+    if (self.fileListTableview.selectedRow >= 0) {
+        NSString *filePath = [self.filePathList objectAtIndex:self.fileListTableview.selectedRow];
+        [self openFilePath:filePath];
+    }
+}
+
+- (void)openFilePath:(NSString *)filePath {
     NSURL *fileURL = [NSURL fileURLWithPath:filePath];
     [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[fileURL]];
 }
