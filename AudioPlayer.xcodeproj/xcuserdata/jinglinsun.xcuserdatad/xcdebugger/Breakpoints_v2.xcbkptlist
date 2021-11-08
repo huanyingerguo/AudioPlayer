@@ -30,38 +30,6 @@
             endingLineNumber = "447"
             landmarkName = "inputCallbackFun(inRefCon, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, ioData)"
             landmarkType = "9">
-            <Locations>
-               <Location
-                  uuid = "68EB9C35-CE5C-4FC7-9DD2-ED6BDA75DE48 - 385cf01a0a121895"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "inputCallbackFun"
-                  moduleName = "AudioPlayer"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jinglinsun/Documents/GitHub/AudioPlayer/AudioPlayer/AudioPlayer/AudioPlayer.m"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "447"
-                  endingLineNumber = "447"
-                  offsetFromSymbolStart = "915">
-               </Location>
-               <Location
-                  uuid = "68EB9C35-CE5C-4FC7-9DD2-ED6BDA75DE48 - fc00511e45512e62"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "__inputCallbackFun_block_invoke_2"
-                  moduleName = "AudioPlayer"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jinglinsun/Documents/GitHub/AudioPlayer/AudioPlayer/AudioPlayer/AudioPlayer.m"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "447"
-                  endingLineNumber = "447"
-                  offsetFromSymbolStart = "12">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -108,8 +76,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "409"
             endingLineNumber = "409"
-            landmarkName = "RecordCallback(inRefCon, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, ioData)"
-            landmarkType = "9">
+            landmarkName = "AudioPlayer"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -157,6 +125,22 @@
             startingLineNumber = "71"
             endingLineNumber = "71"
             landmarkName = "+mapInputFileToDestinationFile:byExtention:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2CD77EB6-365F-43FF-AB6B-6EEF5BD110BA"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AudioPlayer/ViewController.mm"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "53"
+            endingLineNumber = "53"
+            landmarkName = "-viewDidLoad"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

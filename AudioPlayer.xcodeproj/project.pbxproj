@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		CA12097424B31217009A9267 /* AudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA12097324B31217009A9267 /* AudioPlayer.m */; };
+		CA5C699D26FDF23E009E8B17 /* DragTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CA5C699C26FDF23E009E8B17 /* DragTableView.m */; };
 		CAB6035F24A883C1004B313E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CAB6035E24A883C1004B313E /* AppDelegate.m */; };
 		CAB6036224A883C1004B313E /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = CAB6036124A883C1004B313E /* ViewController.mm */; };
 		CAB6036424A883C4004B313E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CAB6036324A883C4004B313E /* Assets.xcassets */; };
@@ -16,9 +17,6 @@
 		CAB6037524A883C5004B313E /* AudioConverterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CAB6037424A883C5004B313E /* AudioConverterTests.m */; };
 		CAB6038024A883C5004B313E /* AudioConverterUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = CAB6037F24A883C5004B313E /* AudioConverterUITests.m */; };
 		F95A1EDB26A821CD00103651 /* AudioFileConvert.mm in Sources */ = {isa = PBXBuildFile; fileRef = F95A1EDA26A821CD00103651 /* AudioFileConvert.mm */; };
-		F95A1F0926A9272C00103651 /* 周杰伦 - 晴天.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F95A1F0626A9272C00103651 /* 周杰伦 - 晴天.mp3 */; };
-		F95A1F0A26A9272C00103651 /* output.pcm in Resources */ = {isa = PBXBuildFile; fileRef = F95A1F0726A9272C00103651 /* output.pcm */; };
-		F95A1F0B26A9272C00103651 /* music_48k-01.wav in Resources */ = {isa = PBXBuildFile; fileRef = F95A1F0826A9272C00103651 /* music_48k-01.wav */; };
 		F9BD58AD26009CF800B50F9E /* DecrpytFile.m in Sources */ = {isa = PBXBuildFile; fileRef = F9BD58AC26009CF800B50F9E /* DecrpytFile.m */; };
 		F9BD58BB26009F3300B50F9E /* crypt_tool in Resources */ = {isa = PBXBuildFile; fileRef = F9BD58B626009F3300B50F9E /* crypt_tool */; };
 		F9BD58BC26009F3300B50F9E /* 使用说明.txt in Resources */ = {isa = PBXBuildFile; fileRef = F9BD58B726009F3300B50F9E /* 使用说明.txt */; };
@@ -44,6 +42,8 @@
 /* Begin PBXFileReference section */
 		CA12097224B31217009A9267 /* AudioPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioPlayer.h; path = AudioPlayer/AudioPlayer.h; sourceTree = "<group>"; };
 		CA12097324B31217009A9267 /* AudioPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AudioPlayer.m; path = AudioPlayer/AudioPlayer.m; sourceTree = "<group>"; };
+		CA5C699B26FDF23E009E8B17 /* DragTableView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DragTableView.h; sourceTree = "<group>"; };
+		CA5C699C26FDF23E009E8B17 /* DragTableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DragTableView.m; sourceTree = "<group>"; };
 		CAB6035A24A883C1004B313E /* AudioPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AudioPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAB6035D24A883C1004B313E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		CAB6035E24A883C1004B313E /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -62,9 +62,6 @@
 		CAB6038124A883C5004B313E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F95A1ED926A821CD00103651 /* AudioFileConvert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioFileConvert.h; sourceTree = "<group>"; };
 		F95A1EDA26A821CD00103651 /* AudioFileConvert.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AudioFileConvert.mm; sourceTree = "<group>"; };
-		F95A1F0626A9272C00103651 /* 周杰伦 - 晴天.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "周杰伦 - 晴天.mp3"; path = "resource/周杰伦 - 晴天.mp3"; sourceTree = "<group>"; };
-		F95A1F0726A9272C00103651 /* output.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; name = output.pcm; path = resource/output.pcm; sourceTree = "<group>"; };
-		F95A1F0826A9272C00103651 /* music_48k-01.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "music_48k-01.wav"; path = "resource/music_48k-01.wav"; sourceTree = "<group>"; };
 		F9BD58AB26009CF800B50F9E /* DecrpytFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DecrpytFile.h; path = AudioPlayer/DecrpytFile.h; sourceTree = "<group>"; };
 		F9BD58AC26009CF800B50F9E /* DecrpytFile.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = DecrpytFile.m; path = AudioPlayer/DecrpytFile.m; sourceTree = "<group>"; };
 		F9BD58B626009F3300B50F9E /* crypt_tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = crypt_tool; path = resource/crypt_tool; sourceTree = "<group>"; };
@@ -135,6 +132,8 @@
 				CA12097324B31217009A9267 /* AudioPlayer.m */,
 				F9BD58AB26009CF800B50F9E /* DecrpytFile.h */,
 				F9BD58AC26009CF800B50F9E /* DecrpytFile.m */,
+				CA5C699B26FDF23E009E8B17 /* DragTableView.h */,
+				CA5C699C26FDF23E009E8B17 /* DragTableView.m */,
 			);
 			path = AudioPlayer;
 			sourceTree = "<group>";
@@ -160,9 +159,6 @@
 		F9BD58B326009F2500B50F9E /* Resource */ = {
 			isa = PBXGroup;
 			children = (
-				F95A1F0826A9272C00103651 /* music_48k-01.wav */,
-				F95A1F0726A9272C00103651 /* output.pcm */,
-				F95A1F0626A9272C00103651 /* 周杰伦 - 晴天.mp3 */,
 				F9BD58B626009F3300B50F9E /* crypt_tool */,
 				F9BD58B726009F3300B50F9E /* 使用说明.txt */,
 			);
@@ -179,6 +175,7 @@
 				CAB6035624A883C1004B313E /* Sources */,
 				CAB6035724A883C1004B313E /* Frameworks */,
 				CAB6035824A883C1004B313E /* Resources */,
+				CA5C699A26FDEFDD009E8B17 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -272,11 +269,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F95A1F0926A9272C00103651 /* 周杰伦 - 晴天.mp3 in Resources */,
-				F95A1F0B26A9272C00103651 /* music_48k-01.wav in Resources */,
 				F9BD58BB26009F3300B50F9E /* crypt_tool in Resources */,
 				CAB6036424A883C4004B313E /* Assets.xcassets in Resources */,
-				F95A1F0A26A9272C00103651 /* output.pcm in Resources */,
 				CAB6036724A883C4004B313E /* Main.storyboard in Resources */,
 				F9BD58BC26009F3300B50F9E /* 使用说明.txt in Resources */,
 			);
@@ -298,11 +292,32 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		CA5C699A26FDEFDD009E8B17 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nbuild_time=$(date +%Y%m%d%H%M)\necho \"build time: $build_time\"\nsrc_plist=\"./$TARGET_NAME/Info.plist\"\ngit=$(sh /etc/profile; which git)\necho \"git: $git\"\ngit_version = $(\"$git\" describe --always)\necho \"git_version: $git_version\"\n\nfor plist in \"$src_plist\"; do\nif [ -f \"$plist\" ]; then\necho \"start to build: $plist\"\nversion = $(/usr/libexec/PlistBuddy -c \"Get :CFBundleShortVersionString\" \"$src_plist\")\necho \"od_version: $version\"\n\nnew_version = ${git_version}\n/usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString ${new_version}\" \"$plist\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion ${build_time}\" \"$plist\"\nelse\necho \"No file: $src_plist\"\nfi\ndone\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		CAB6035624A883C1004B313E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CA5C699D26FDF23E009E8B17 /* DragTableView.m in Sources */,
 				CAB6036224A883C1004B313E /* ViewController.mm in Sources */,
 				CAB6036A24A883C4004B313E /* main.m in Sources */,
 				CAB6035F24A883C1004B313E /* AppDelegate.m in Sources */,

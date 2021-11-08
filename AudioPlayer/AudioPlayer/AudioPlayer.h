@@ -18,6 +18,7 @@ typedef void (^PlayProgress)(long long readPacker, float progress);
 + (instancetype)sharedInstance;
 @property (copy) PlayProgress playProgress; //播放进度
 @property (copy, nonatomic) NSString *filePath;
+@property (copy, nonatomic) NSString *recordPath;
 @property (assign) SInt64 readedPacket; // 已读的packet数量
 @property (assign) SInt64 packetNums; // 全部packet数量
 @property (assign) BOOL isRecording;
@@ -29,9 +30,9 @@ typedef void (^PlayProgress)(long long readPacker, float progress);
 
 - (NSString *)getAudioStreamBasicDescriptionForInput;
 - (NSString *)getAudioStreamBasicDescriptionForOutput;
-- (void)play;
+- (void)play:(NSString *)filePath;
+- (void)record:(NSString *)filePath;
 - (void)pause;
-- (void)record;
 
 - (BOOL)isFilePCMType:(NSString *)filePath;
 @end

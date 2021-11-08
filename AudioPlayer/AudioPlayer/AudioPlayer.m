@@ -108,7 +108,9 @@
     }
 }
 
-- (void)play {
+- (void)play:(NSString *)filePath {
+    [self setFilePath:filePath];
+    
     if (self.isPlaying ||
         self.isRecording) {
         self.readedPacket = 0;
@@ -140,7 +142,8 @@
     self.isRecording = NO;
 }
 
-- (void)record {
+- (void)record:(NSString *)filePath {
+    _recordPath = filePath;
     if (self.isPlaying ||
         self.isRecording) {
         [self pause];
@@ -337,8 +340,7 @@
 
 - (void)writePCMData:(Byte *)buffer size:(int)size {
     static FILE *file = NULL;
-    NSString *path = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    path = [path stringByAppendingString:@"/record.pcm"];
+    NSString *path = self.recordPath;
     if(![[NSFileManager defaultManager] fileExistsAtPath:path]) {
         BOOL res = [[NSFileManager defaultManager] createFileAtPath:path contents:nil attributes:nil];
         if (!res) {
