@@ -7,6 +7,7 @@
 //
 
 #import "AudioPlayer.h"
+#include <CoreAudio/AudioHardware.h>
 #import <AudioUnit/AudioUnit.h>
 #import <AudioToolbox/AudioFile.h>
 #import <AudioToolbox/AudioConverter.h>
@@ -18,9 +19,23 @@
 
 #define MAC_PLAT 1
 
-#define BIT_DEPTH 32
+#define BIT_DEPTH 16
 #define SAMPLE_RATE 44100
 #define CHANNEL_COUNT 1
+
+// See:
+// https://trac.webkit.org/browser/webkit/trunk/Source/WebCore/PAL/pal/spi/cf/CoreAudioSPI.h?rev=228264
+OSStatus AudioDeviceDuck(AudioDeviceID inDevice,
+                         Float32 inDuckedLevel,
+                         const AudioTimeStamp* __nullable inStartTime,
+                         Float32 inRampDuration) __attribute__((weak_import));
+
+void UndoDucking(AudioDeviceID output_device_id) {
+    if (AudioDeviceDuck != 0) {
+        // Ramp the volume back up over half a second.
+        AudioDeviceDuck(output_device_id, 1.0, NULL, 0.5);
+    }
+}
 
 @interface AudioPlayer ()
 {
@@ -124,6 +139,8 @@
     status = AudioOutputUnitStart(unit);
     CheckError(status, "audioUnit开始失败");
     self.isPlaying = YES;
+    
+    UndoDucking(0);
 }
 
 - (void)pause {
@@ -194,7 +211,7 @@
     }
     
     //对于转PCM的场景：位深 采样率 通道数固定。
-    AudioStreamBasicDescription outputFormat = [self buildAudioStreamBasicDesc:32 sampleRate:44100 channelsPerFrame:1 framesPerPacket:1];
+    AudioStreamBasicDescription outputFormat = [self buildAudioStreamBasicDesc:16 sampleRate:48000 channelsPerFrame:1 framesPerPacket:1];
     OSStatus status = AudioConverterNew(&audioFileFormat, &outputFormat, &audioConverter);
     CheckError(status, "AudioConverterNew failed");
     
@@ -251,14 +268,14 @@
     if (isEnableRecord) {
         desc.componentSubType = kAudioUnitSubType_VoiceProcessingIO; //录音专用
     } else {
-        desc.componentSubType = kAudioUnitSubType_HALOutput;
+        desc.componentSubType = kAudioUnitSubType_HALOutput; //普通无录音功能
     }
     
     /*
      #ifdef MAC_PLAT
-     desc.componentSubType = kAudioUnitSubType_HALOutput; //mac专用
+     desc.componentSubType = kAudioUnitSubType_HALOutput; //mac 普通无录音功能
      #else
-     desc.componentSubType = kAudioUnitSubType_RemoteIO; //ios 专用
+     desc.componentSubType = kAudioUnitSubType_RemoteIO; //ios 专用(录音)
      #endif
      */
     desc.componentManufacturer = kAudioUnitManufacturer_Apple;
@@ -271,12 +288,18 @@
     
     if (isEnableRecord) {
         // get hardware device format
-        AudioStreamBasicDescription _audioRecordFormat;
+        AudioStreamBasicDescription deviceAudioRecordFormat;
         UInt32 property_size = sizeof(AudioStreamBasicDescription);;
         status = AudioUnitGetProperty(unit, kAudioUnitProperty_StreamFormat,
-            kAudioUnitScope_Input, 1, &_audioRecordFormat, &property_size);
+            kAudioUnitScope_Input, kInputBus, &deviceAudioRecordFormat, &property_size);
         
-        AudioStreamBasicDescription audioRecordFormat = [self buildAudioStreamBasicDesc:BIT_DEPTH sampleRate:SAMPLE_RATE channelsPerFrame:CHANNEL_COUNT framesPerPacket:1];
+        deviceAudioRecordFormat.mSampleRate = 441000;
+        deviceAudioRecordFormat.mFormatFlags =
+            kAudioFormatFlagsNativeFloatPacked | kLinearPCMFormatFlagIsNonInterleaved;
+        deviceAudioRecordFormat.mBitsPerChannel = sizeof(Float32) * 8;
+        
+        AudioStreamBasicDescription audioRecordFormat = [self buildAudioStreamBasicDesc:deviceAudioRecordFormat.mBitsPerChannel sampleRate:deviceAudioRecordFormat.mSampleRate channelsPerFrame:CHANNEL_COUNT framesPerPacket:1];
+        
         //启动录制
         UInt32 flagIn = 1;
         status = AudioUnitSetProperty(unit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input, kInputBus, &flagIn, sizeof(flagIn));
