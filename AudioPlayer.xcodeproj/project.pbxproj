@@ -15,13 +15,13 @@
 		CAB6036A24A883C4004B313E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CAB6036924A883C4004B313E /* main.m */; };
 		CAB6037524A883C5004B313E /* AudioConverterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CAB6037424A883C5004B313E /* AudioConverterTests.m */; };
 		CAB6038024A883C5004B313E /* AudioConverterUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = CAB6037F24A883C5004B313E /* AudioConverterUITests.m */; };
-		F95A1EDB26A821CD00103651 /* AudioFileConvert.mm in Sources */ = {isa = PBXBuildFile; fileRef = F95A1EDA26A821CD00103651 /* AudioFileConvert.mm */; };
 		F95A1F0926A9272C00103651 /* 周杰伦 - 晴天.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F95A1F0626A9272C00103651 /* 周杰伦 - 晴天.mp3 */; };
 		F95A1F0A26A9272C00103651 /* output.pcm in Resources */ = {isa = PBXBuildFile; fileRef = F95A1F0726A9272C00103651 /* output.pcm */; };
 		F95A1F0B26A9272C00103651 /* music_48k-01.wav in Resources */ = {isa = PBXBuildFile; fileRef = F95A1F0826A9272C00103651 /* music_48k-01.wav */; };
 		F9BD58AD26009CF800B50F9E /* DecrpytFile.m in Sources */ = {isa = PBXBuildFile; fileRef = F9BD58AC26009CF800B50F9E /* DecrpytFile.m */; };
 		F9BD58BB26009F3300B50F9E /* crypt_tool in Resources */ = {isa = PBXBuildFile; fileRef = F9BD58B626009F3300B50F9E /* crypt_tool */; };
 		F9BD58BC26009F3300B50F9E /* 使用说明.txt in Resources */ = {isa = PBXBuildFile; fileRef = F9BD58B726009F3300B50F9E /* 使用说明.txt */; };
+		F9F2FC0828320612001865D2 /* AudioFileConvert.mm in Sources */ = {isa = PBXBuildFile; fileRef = F9F2FC0628320612001865D2 /* AudioFileConvert.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,8 +42,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		CA12097224B31217009A9267 /* AudioPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioPlayer.h; path = AudioPlayer/AudioPlayer.h; sourceTree = "<group>"; };
-		CA12097324B31217009A9267 /* AudioPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AudioPlayer.m; path = AudioPlayer/AudioPlayer.m; sourceTree = "<group>"; };
+		CA12097224B31217009A9267 /* AudioPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioPlayer.h; sourceTree = "<group>"; };
+		CA12097324B31217009A9267 /* AudioPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioPlayer.m; sourceTree = "<group>"; };
 		CAB6035A24A883C1004B313E /* AudioPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AudioPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAB6035D24A883C1004B313E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		CAB6035E24A883C1004B313E /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -60,15 +60,15 @@
 		CAB6037B24A883C5004B313E /* AudioPlayerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AudioPlayerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAB6037F24A883C5004B313E /* AudioConverterUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioConverterUITests.m; sourceTree = "<group>"; };
 		CAB6038124A883C5004B313E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F95A1ED926A821CD00103651 /* AudioFileConvert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioFileConvert.h; sourceTree = "<group>"; };
-		F95A1EDA26A821CD00103651 /* AudioFileConvert.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AudioFileConvert.mm; sourceTree = "<group>"; };
 		F95A1F0626A9272C00103651 /* 周杰伦 - 晴天.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "周杰伦 - 晴天.mp3"; path = "resource/周杰伦 - 晴天.mp3"; sourceTree = "<group>"; };
 		F95A1F0726A9272C00103651 /* output.pcm */ = {isa = PBXFileReference; lastKnownFileType = file; name = output.pcm; path = resource/output.pcm; sourceTree = "<group>"; };
 		F95A1F0826A9272C00103651 /* music_48k-01.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = "music_48k-01.wav"; path = "resource/music_48k-01.wav"; sourceTree = "<group>"; };
-		F9BD58AB26009CF800B50F9E /* DecrpytFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DecrpytFile.h; path = AudioPlayer/DecrpytFile.h; sourceTree = "<group>"; };
-		F9BD58AC26009CF800B50F9E /* DecrpytFile.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = DecrpytFile.m; path = AudioPlayer/DecrpytFile.m; sourceTree = "<group>"; };
+		F9BD58AB26009CF800B50F9E /* DecrpytFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DecrpytFile.h; sourceTree = "<group>"; };
+		F9BD58AC26009CF800B50F9E /* DecrpytFile.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DecrpytFile.m; sourceTree = "<group>"; };
 		F9BD58B626009F3300B50F9E /* crypt_tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = crypt_tool; path = resource/crypt_tool; sourceTree = "<group>"; };
 		F9BD58B726009F3300B50F9E /* 使用说明.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "使用说明.txt"; path = "resource/使用说明.txt"; sourceTree = "<group>"; };
+		F9F2FC0628320612001865D2 /* AudioFileConvert.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AudioFileConvert.mm; path = AudioPlayer/AudioPlayer/WAV/AudioFileConvert.mm; sourceTree = SOURCE_ROOT; };
+		F9F2FC0728320612001865D2 /* AudioFileConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioFileConvert.h; path = AudioPlayer/AudioPlayer/WAV/AudioFileConvert.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +119,9 @@
 		CAB6035C24A883C1004B313E /* AudioPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				F9F2FC0D28320637001865D2 /* Decrpyt */,
+				F9F2FC0C28320621001865D2 /* Core */,
+				F9F2FC05283205CA001865D2 /* WAV */,
 				F9BD58B326009F2500B50F9E /* Resource */,
 				CAB6035D24A883C1004B313E /* AppDelegate.h */,
 				CAB6035E24A883C1004B313E /* AppDelegate.m */,
@@ -129,12 +132,6 @@
 				CAB6036824A883C4004B313E /* Info.plist */,
 				CAB6036924A883C4004B313E /* main.m */,
 				CAB6036B24A883C4004B313E /* AudioConverter.entitlements */,
-				F95A1ED926A821CD00103651 /* AudioFileConvert.h */,
-				F95A1EDA26A821CD00103651 /* AudioFileConvert.mm */,
-				CA12097224B31217009A9267 /* AudioPlayer.h */,
-				CA12097324B31217009A9267 /* AudioPlayer.m */,
-				F9BD58AB26009CF800B50F9E /* DecrpytFile.h */,
-				F9BD58AC26009CF800B50F9E /* DecrpytFile.m */,
 			);
 			path = AudioPlayer;
 			sourceTree = "<group>";
@@ -167,6 +164,33 @@
 				F9BD58B726009F3300B50F9E /* 使用说明.txt */,
 			);
 			name = Resource;
+			sourceTree = "<group>";
+		};
+		F9F2FC05283205CA001865D2 /* WAV */ = {
+			isa = PBXGroup;
+			children = (
+				F9F2FC0728320612001865D2 /* AudioFileConvert.h */,
+				F9F2FC0628320612001865D2 /* AudioFileConvert.mm */,
+			);
+			path = WAV;
+			sourceTree = "<group>";
+		};
+		F9F2FC0C28320621001865D2 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				CA12097224B31217009A9267 /* AudioPlayer.h */,
+				CA12097324B31217009A9267 /* AudioPlayer.m */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		F9F2FC0D28320637001865D2 /* Decrpyt */ = {
+			isa = PBXGroup;
+			children = (
+				F9BD58AB26009CF800B50F9E /* DecrpytFile.h */,
+				F9BD58AC26009CF800B50F9E /* DecrpytFile.m */,
+			);
+			path = Decrpyt;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -307,7 +331,7 @@
 				CAB6036A24A883C4004B313E /* main.m in Sources */,
 				CAB6035F24A883C1004B313E /* AppDelegate.m in Sources */,
 				CA12097424B31217009A9267 /* AudioPlayer.m in Sources */,
-				F95A1EDB26A821CD00103651 /* AudioFileConvert.mm in Sources */,
+				F9F2FC0828320612001865D2 /* AudioFileConvert.mm in Sources */,
 				F9BD58AD26009CF800B50F9E /* DecrpytFile.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

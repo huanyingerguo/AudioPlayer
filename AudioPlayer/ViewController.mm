@@ -7,11 +7,11 @@
 //
 
 #import "ViewController.h"
-#import "AudioPlayer.h"
+#import "Core/AudioPlayer.h"
 #import "DecrpytFile.h"
 #import "AudioFileConvert.h"
 
-@interface ViewController () <NSTableViewDelegate, NSTableViewDataSource>
+@interface ViewController () <NSTableViewDelegate, NSTableViewDataSource, NSMenuDelegate>
 @property (weak) IBOutlet NSTextField *inputDesc;
 @property (weak) IBOutlet NSTextField *outputDesc;
 
@@ -49,6 +49,7 @@
     };
     [self resetSelectedFiles];
     [self.fileListTableview reloadData];
+    
 }
 
 - (void)resetSelectedFiles {
