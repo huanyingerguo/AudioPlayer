@@ -60,6 +60,7 @@
     };
     [self resetSelectedFiles];
     [self.fileListTableview reloadData];
+    
 }
 
 - (void)resetSelectedFiles {
@@ -100,11 +101,11 @@
     if (sampleRate.length) {
         self.sampleRate.stringValue = sampleRate;
         self.channelCount.stringValue = @"1";
-        self.bitDepth.stringValue = @"16";
+        self.bitDepth.stringValue = @"32";
     } else {
         self.sampleRate.stringValue = @"44100";
         self.channelCount.stringValue = @"1";
-        self.bitDepth.stringValue = @"32";
+        self.bitDepth.stringValue = @"16";
     }
     
     [AudioPlayer sharedInstance].sampleRate = self.sampleRate.stringValue.intValue;
