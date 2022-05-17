@@ -7,8 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CA12097424B31217009A9267 /* AudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA12097324B31217009A9267 /* AudioPlayer.m */; };
 		CA5C699D26FDF23E009E8B17 /* DragTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CA5C699C26FDF23E009E8B17 /* DragTableView.m */; };
+		CA9AD7F928337ADF00CED3F1 /* AudioFileConvert.mm in Sources */ = {isa = PBXBuildFile; fileRef = CA9AD7F828337ADF00CED3F1 /* AudioFileConvert.mm */; };
+		CA9AD7FC28337AEC00CED3F1 /* DecrpytFile.m in Sources */ = {isa = PBXBuildFile; fileRef = CA9AD7FB28337AEC00CED3F1 /* DecrpytFile.m */; };
+		CA9AD7FF28337AF600CED3F1 /* AudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA9AD7FD28337AF600CED3F1 /* AudioPlayer.m */; };
+		CA9AD80428337B9F00CED3F1 /* 使用说明.txt in Resources */ = {isa = PBXBuildFile; fileRef = CA9AD80228337B9F00CED3F1 /* 使用说明.txt */; };
+		CA9AD80528337B9F00CED3F1 /* crypt_tool in Resources */ = {isa = PBXBuildFile; fileRef = CA9AD80328337B9F00CED3F1 /* crypt_tool */; };
 		CAB6035F24A883C1004B313E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CAB6035E24A883C1004B313E /* AppDelegate.m */; };
 		CAB6036224A883C1004B313E /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = CAB6036124A883C1004B313E /* ViewController.mm */; };
 		CAB6036424A883C4004B313E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CAB6036324A883C4004B313E /* Assets.xcassets */; };
@@ -16,10 +20,6 @@
 		CAB6036A24A883C4004B313E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CAB6036924A883C4004B313E /* main.m */; };
 		CAB6037524A883C5004B313E /* AudioConverterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CAB6037424A883C5004B313E /* AudioConverterTests.m */; };
 		CAB6038024A883C5004B313E /* AudioConverterUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = CAB6037F24A883C5004B313E /* AudioConverterUITests.m */; };
-		F95A1EDB26A821CD00103651 /* AudioFileConvert.mm in Sources */ = {isa = PBXBuildFile; fileRef = F95A1EDA26A821CD00103651 /* AudioFileConvert.mm */; };
-		F9BD58AD26009CF800B50F9E /* DecrpytFile.m in Sources */ = {isa = PBXBuildFile; fileRef = F9BD58AC26009CF800B50F9E /* DecrpytFile.m */; };
-		F9BD58BB26009F3300B50F9E /* crypt_tool in Resources */ = {isa = PBXBuildFile; fileRef = F9BD58B626009F3300B50F9E /* crypt_tool */; };
-		F9BD58BC26009F3300B50F9E /* 使用说明.txt in Resources */ = {isa = PBXBuildFile; fileRef = F9BD58B726009F3300B50F9E /* 使用说明.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,10 +40,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		CA12097224B31217009A9267 /* AudioPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioPlayer.h; path = AudioPlayer/AudioPlayer.h; sourceTree = "<group>"; };
-		CA12097324B31217009A9267 /* AudioPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AudioPlayer.m; path = AudioPlayer/AudioPlayer.m; sourceTree = "<group>"; };
 		CA5C699B26FDF23E009E8B17 /* DragTableView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DragTableView.h; sourceTree = "<group>"; };
 		CA5C699C26FDF23E009E8B17 /* DragTableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DragTableView.m; sourceTree = "<group>"; };
+		CA9AD7F728337ADF00CED3F1 /* AudioFileConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioFileConvert.h; path = AudioPlayer/WAV/AudioFileConvert.h; sourceTree = "<group>"; };
+		CA9AD7F828337ADF00CED3F1 /* AudioFileConvert.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AudioFileConvert.mm; path = AudioPlayer/WAV/AudioFileConvert.mm; sourceTree = "<group>"; };
+		CA9AD7FA28337AEC00CED3F1 /* DecrpytFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DecrpytFile.h; path = AudioPlayer/Decrpyt/DecrpytFile.h; sourceTree = "<group>"; };
+		CA9AD7FB28337AEC00CED3F1 /* DecrpytFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DecrpytFile.m; path = AudioPlayer/Decrpyt/DecrpytFile.m; sourceTree = "<group>"; };
+		CA9AD7FD28337AF600CED3F1 /* AudioPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AudioPlayer.m; path = AudioPlayer/Core/AudioPlayer.m; sourceTree = "<group>"; };
+		CA9AD7FE28337AF600CED3F1 /* AudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioPlayer.h; path = AudioPlayer/Core/AudioPlayer.h; sourceTree = "<group>"; };
+		CA9AD80228337B9F00CED3F1 /* 使用说明.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "使用说明.txt"; path = "AudioPlayer/lib/使用说明.txt"; sourceTree = "<group>"; };
+		CA9AD80328337B9F00CED3F1 /* crypt_tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = crypt_tool; path = AudioPlayer/lib/crypt_tool; sourceTree = "<group>"; };
 		CAB6035A24A883C1004B313E /* AudioPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AudioPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAB6035D24A883C1004B313E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		CAB6035E24A883C1004B313E /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -60,12 +66,6 @@
 		CAB6037B24A883C5004B313E /* AudioPlayerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AudioPlayerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAB6037F24A883C5004B313E /* AudioConverterUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioConverterUITests.m; sourceTree = "<group>"; };
 		CAB6038124A883C5004B313E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F95A1ED926A821CD00103651 /* AudioFileConvert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioFileConvert.h; sourceTree = "<group>"; };
-		F95A1EDA26A821CD00103651 /* AudioFileConvert.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AudioFileConvert.mm; sourceTree = "<group>"; };
-		F9BD58AB26009CF800B50F9E /* DecrpytFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DecrpytFile.h; path = AudioPlayer/DecrpytFile.h; sourceTree = "<group>"; };
-		F9BD58AC26009CF800B50F9E /* DecrpytFile.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = DecrpytFile.m; path = AudioPlayer/DecrpytFile.m; sourceTree = "<group>"; };
-		F9BD58B626009F3300B50F9E /* crypt_tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = crypt_tool; path = resource/crypt_tool; sourceTree = "<group>"; };
-		F9BD58B726009F3300B50F9E /* 使用说明.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "使用说明.txt"; path = "resource/使用说明.txt"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +93,42 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CA9AD7F428337AAF00CED3F1 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				CA9AD7FE28337AF600CED3F1 /* AudioPlayer.h */,
+				CA9AD7FD28337AF600CED3F1 /* AudioPlayer.m */,
+			);
+			name = Core;
+			sourceTree = "<group>";
+		};
+		CA9AD7F528337AB800CED3F1 /* Decrypt */ = {
+			isa = PBXGroup;
+			children = (
+				CA9AD7FA28337AEC00CED3F1 /* DecrpytFile.h */,
+				CA9AD7FB28337AEC00CED3F1 /* DecrpytFile.m */,
+			);
+			name = Decrypt;
+			sourceTree = "<group>";
+		};
+		CA9AD7F628337AC800CED3F1 /* WAV */ = {
+			isa = PBXGroup;
+			children = (
+				CA9AD7F728337ADF00CED3F1 /* AudioFileConvert.h */,
+				CA9AD7F828337ADF00CED3F1 /* AudioFileConvert.mm */,
+			);
+			name = WAV;
+			sourceTree = "<group>";
+		};
+		CA9AD80128337B7100CED3F1 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				CA9AD80228337B9F00CED3F1 /* 使用说明.txt */,
+				CA9AD80328337B9F00CED3F1 /* crypt_tool */,
+			);
+			name = lib;
+			sourceTree = "<group>";
+		};
 		CAB6035124A883C1004B313E = {
 			isa = PBXGroup;
 			children = (
@@ -116,6 +152,10 @@
 		CAB6035C24A883C1004B313E /* AudioPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				CA9AD80128337B7100CED3F1 /* lib */,
+				CA9AD7F628337AC800CED3F1 /* WAV */,
+				CA9AD7F528337AB800CED3F1 /* Decrypt */,
+				CA9AD7F428337AAF00CED3F1 /* Core */,
 				F9BD58B326009F2500B50F9E /* Resource */,
 				CAB6035D24A883C1004B313E /* AppDelegate.h */,
 				CAB6035E24A883C1004B313E /* AppDelegate.m */,
@@ -126,12 +166,6 @@
 				CAB6036824A883C4004B313E /* Info.plist */,
 				CAB6036924A883C4004B313E /* main.m */,
 				CAB6036B24A883C4004B313E /* AudioConverter.entitlements */,
-				F95A1ED926A821CD00103651 /* AudioFileConvert.h */,
-				F95A1EDA26A821CD00103651 /* AudioFileConvert.mm */,
-				CA12097224B31217009A9267 /* AudioPlayer.h */,
-				CA12097324B31217009A9267 /* AudioPlayer.m */,
-				F9BD58AB26009CF800B50F9E /* DecrpytFile.h */,
-				F9BD58AC26009CF800B50F9E /* DecrpytFile.m */,
 				CA5C699B26FDF23E009E8B17 /* DragTableView.h */,
 				CA5C699C26FDF23E009E8B17 /* DragTableView.m */,
 			);
@@ -159,8 +193,6 @@
 		F9BD58B326009F2500B50F9E /* Resource */ = {
 			isa = PBXGroup;
 			children = (
-				F9BD58B626009F3300B50F9E /* crypt_tool */,
-				F9BD58B726009F3300B50F9E /* 使用说明.txt */,
 			);
 			name = Resource;
 			sourceTree = "<group>";
@@ -269,10 +301,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F9BD58BB26009F3300B50F9E /* crypt_tool in Resources */,
 				CAB6036424A883C4004B313E /* Assets.xcassets in Resources */,
+				CA9AD80528337B9F00CED3F1 /* crypt_tool in Resources */,
 				CAB6036724A883C4004B313E /* Main.storyboard in Resources */,
-				F9BD58BC26009F3300B50F9E /* 使用说明.txt in Resources */,
+				CA9AD80428337B9F00CED3F1 /* 使用说明.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -317,13 +349,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CA9AD7F928337ADF00CED3F1 /* AudioFileConvert.mm in Sources */,
 				CA5C699D26FDF23E009E8B17 /* DragTableView.m in Sources */,
+				CA9AD7FF28337AF600CED3F1 /* AudioPlayer.m in Sources */,
 				CAB6036224A883C1004B313E /* ViewController.mm in Sources */,
 				CAB6036A24A883C4004B313E /* main.m in Sources */,
 				CAB6035F24A883C1004B313E /* AppDelegate.m in Sources */,
-				CA12097424B31217009A9267 /* AudioPlayer.m in Sources */,
-				F95A1EDB26A821CD00103651 /* AudioFileConvert.mm in Sources */,
-				F9BD58AD26009CF800B50F9E /* DecrpytFile.m in Sources */,
+				CA9AD7FC28337AEC00CED3F1 /* DecrpytFile.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
