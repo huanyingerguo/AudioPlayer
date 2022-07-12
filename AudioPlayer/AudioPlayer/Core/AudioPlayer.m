@@ -18,6 +18,7 @@
 #define NO_MORE_DATA (-12306)
 
 #define MAC_PLAT 1
+#define E_NABLE_RECORD_CONVERT 0
 
 #define BIT_DEPTH 16
 #define SAMPLE_RATE 44100
@@ -42,11 +43,14 @@ void UndoDucking(AudioDeviceID output_device_id) {
     AudioUnit unit;
     UInt32 maximuFramePerPacket;
     AudioFileID audioFileID;
-    AudioStreamBasicDescription audioFileFormat;
-    AudioStreamBasicDescription audioOutputFormat;
-    AudioStreamPacketDescription *audioPacketFormat;
+    AudioStreamBasicDescription sourceFileFormat;
+    AudioStreamBasicDescription expectOutputFormat;
+    AudioStreamBasicDescription sourceHADInputFormat;
+    
+    AudioStreamPacketDescription *audioFilePacketFormat;
     
     AudioBufferList *buffList;
+    AudioBufferList *inOriginBufferList;
     Byte *convertBuffer;
     
     AudioConverterRef audioConverter;
@@ -176,11 +180,11 @@ void UndoDucking(AudioDeviceID output_device_id) {
 }
 
 - (NSString *)getAudioStreamBasicDescriptionForInput {
-    return [AudioPlayer audioStreamBasicDescription:audioFileFormat];
+    return [AudioPlayer audioStreamBasicDescription:sourceFileFormat];
 }
 
 - (NSString *)getAudioStreamBasicDescriptionForOutput {
-    return [AudioPlayer audioStreamBasicDescription:audioOutputFormat];
+    return [AudioPlayer audioStreamBasicDescription:expectOutputFormat];
 }
 
 #pragma mark- Private Method
@@ -196,7 +200,7 @@ void UndoDucking(AudioDeviceID output_device_id) {
     AudioFileOpenURL((__bridge CFURLRef)fileURL, kAudioFileReadPermission, 0, &audioFileID);
     
     uint32_t size = sizeof(AudioStreamBasicDescription);
-    AudioFileGetProperty(audioFileID, kAudioFilePropertyDataFormat, &size, &audioFileFormat);
+    AudioFileGetProperty(audioFileID, kAudioFilePropertyDataFormat, &size, &sourceFileFormat);
     
     UInt32 packetCountSize = sizeof(_packetNums);
     AudioFileGetProperty(audioFileID, kAudioFilePropertyAudioDataPacketCount, &packetCountSize, &_packetNums);
@@ -212,33 +216,12 @@ void UndoDucking(AudioDeviceID output_device_id) {
     
     //对于转PCM的场景：位深 采样率 通道数固定。
     AudioStreamBasicDescription outputFormat = [self buildAudioStreamBasicDesc:16 sampleRate:48000 channelsPerFrame:1 framesPerPacket:1];
-    OSStatus status = AudioConverterNew(&audioFileFormat, &outputFormat, &audioConverter);
+    OSStatus status = AudioConverterNew(&sourceFileFormat, &outputFormat, &audioConverter);
     CheckError(status, "AudioConverterNew failed");
     
-    if (self->audioPacketFormat) {
-        free(self->audioPacketFormat);
-        self->audioPacketFormat = nil;
-    }
-    
-    if (self->buffList) {
-        for (int i = 0; i < self->buffList->mNumberBuffers; i++) {
-            if (self->buffList->mBuffers[0].mData) {
-                free(self->buffList->mBuffers[0].mData);
-                self->buffList->mBuffers[0].mData = NULL;
-            }
-        }
-        free(self->buffList);
-        self->buffList = nil;
-    }
-    
-    if (self->convertBuffer) {
-        free(self->convertBuffer);
-        self->convertBuffer = nil;
-    }
-    
-    self->audioPacketFormat = malloc(sizeof(AudioStreamPacketDescription) * (CONST_BUFFER_SIZE / maximuFramePerPacket + 1));
-    self->buffList = [[self class] allocAudioBufferListWithMDataByteSize:CONST_BUFFER_SIZE mNumberChannels:1 mNumberBuffers:1];
-    self->convertBuffer = malloc(CONST_BUFFER_SIZE);
+    [self prepareBufferList];
+    [self prepareConverBuffer];
+    [self prepareFilePacketFormat];
 }
 
 - (void)presetOutputFormatParameters {
@@ -248,6 +231,14 @@ void UndoDucking(AudioDeviceID output_device_id) {
 }
 
 - (void)prepareForRecord {
+#if E_NABLE_RECORD_CONVERT
+    [self prepareAudioConverter];
+#else
+    [self prepareBufferList];
+#endif
+}
+
+- (void)prepareBufferList {
     if (self->buffList) {
         for (int i = 0; i < self->buffList->mNumberBuffers; i++) {
             if (self->buffList->mBuffers[0].mData) {
@@ -260,6 +251,37 @@ void UndoDucking(AudioDeviceID output_device_id) {
     }
     
     self->buffList = [[self class] allocAudioBufferListWithMDataByteSize:CONST_BUFFER_SIZE mNumberChannels:1 mNumberBuffers:1];
+    
+    if (self->inOriginBufferList) {
+        for (int i = 0; i < self->buffList->mNumberBuffers; i++) {
+            if (self->inOriginBufferList->mBuffers[0].mData) {
+                free(self->inOriginBufferList->mBuffers[0].mData);
+                self->inOriginBufferList->mBuffers[0].mData = NULL;
+            }
+        }
+        free(self->inOriginBufferList);
+        self->inOriginBufferList = nil;
+    }
+    
+    self->inOriginBufferList = [[self class] allocAudioBufferListWithMDataByteSize:CONST_BUFFER_SIZE mNumberChannels:1 mNumberBuffers:1];
+}
+
+- (void)prepareConverBuffer {
+    if (self->convertBuffer) {
+        free(self->convertBuffer);
+        self->convertBuffer = nil;
+    }
+    
+    self->convertBuffer = malloc(CONST_BUFFER_SIZE);
+}
+
+- (void)prepareFilePacketFormat {
+    if (self->audioFilePacketFormat) {
+        free(self->audioFilePacketFormat);
+        self->audioFilePacketFormat = nil;
+    }
+    
+    self->audioFilePacketFormat = malloc(sizeof(AudioStreamPacketDescription) * (CONST_BUFFER_SIZE / maximuFramePerPacket + 1));
 }
 
 - (void)configAudioUnit:(BOOL)isEnableRecord {
@@ -288,26 +310,33 @@ void UndoDucking(AudioDeviceID output_device_id) {
     
     if (isEnableRecord) {
         // get hardware device format
-        AudioStreamBasicDescription deviceAudioRecordFormat;
         UInt32 property_size = sizeof(AudioStreamBasicDescription);;
         status = AudioUnitGetProperty(unit, kAudioUnitProperty_StreamFormat,
-            kAudioUnitScope_Input, kInputBus, &deviceAudioRecordFormat, &property_size);
+            kAudioUnitScope_Input, kInputBus, &sourceHADInputFormat, &property_size);
         
-        deviceAudioRecordFormat.mSampleRate = 441000;
-        deviceAudioRecordFormat.mFormatFlags =
+        NSLog(@"打印输出：原始设备的输入流信息:*********");
+        [[self class] audioStreamBasicDescription:sourceHADInputFormat];
+
+        sourceHADInputFormat.mChannelsPerFrame = 1;
+        sourceHADInputFormat.mSampleRate = 44100; // 参数不对的话，会导致命中： client-side input and output formats do not match (err=-10875)
+        sourceHADInputFormat.mFormatID = kAudioFormatLinearPCM;
+        sourceHADInputFormat.mFormatFlags =
             kAudioFormatFlagsNativeFloatPacked | kLinearPCMFormatFlagIsNonInterleaved;
-        deviceAudioRecordFormat.mBitsPerChannel = sizeof(Float32) * 8;
+        sourceHADInputFormat.mBitsPerChannel = sizeof(Float32) * 8;
+        sourceHADInputFormat.mBytesPerFrame = sourceHADInputFormat.mBitsPerChannel * sourceHADInputFormat.mChannelsPerFrame / 8;
+        sourceHADInputFormat.mFramesPerPacket = 1;
+        sourceHADInputFormat.mBytesPerPacket = sourceHADInputFormat.mBytesPerFrame;
         
-        AudioStreamBasicDescription audioRecordFormat = [self buildAudioStreamBasicDesc:deviceAudioRecordFormat.mBitsPerChannel sampleRate:deviceAudioRecordFormat.mSampleRate channelsPerFrame:CHANNEL_COUNT framesPerPacket:1];
+        NSLog(@"打印输出：修改之后的输入流信息:*********");
+        [[self class] audioStreamBasicDescription:sourceHADInputFormat];
+
+        status = AudioUnitSetProperty(unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, kInputBus, &sourceHADInputFormat, sizeof(sourceHADInputFormat));
+        CheckError(status, "kAudioUnitProperty_StreamFormat failed");
         
         //启动录制
         UInt32 flagIn = 1;
         status = AudioUnitSetProperty(unit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input, kInputBus, &flagIn, sizeof(flagIn));
         CheckError(status, "kAudioOutputUnitProperty_EnableIO failed");
-        
-        status = AudioUnitSetProperty(unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, kInputBus, &audioRecordFormat, sizeof(audioRecordFormat));
-        CheckError(status, "kAudioUnitProperty_StreamFormat failed");
-      
 #if 1
         const UInt32 one = 1;
         const UInt32 zero = 0;
@@ -330,9 +359,9 @@ void UndoDucking(AudioDeviceID output_device_id) {
         CheckError(status, "kAudioOutputUnitProperty_SetInputCallback failed");
     } else {
         //设置输入流格式
-        audioOutputFormat = [self buildAudioStreamBasicDesc:self.bitDepth sampleRate:self.sampleRate channelsPerFrame:self.channelCount framesPerPacket:1];
+        expectOutputFormat = [self buildAudioStreamBasicDesc:self.bitDepth sampleRate:self.sampleRate channelsPerFrame:self.channelCount framesPerPacket:1];
         
-        status = AudioUnitSetProperty(unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, kOutputBus, &audioOutputFormat, sizeof(audioOutputFormat));
+        status = AudioUnitSetProperty(unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, kOutputBus, &expectOutputFormat, sizeof(expectOutputFormat));
         CheckError(status, "kAudioUnitProperty_StreamFormat failed");
         
         //设置声音输入回掉
@@ -389,7 +418,7 @@ void UndoDucking(AudioDeviceID output_device_id) {
 static void CheckError(OSStatus error, const char *operation)
 {
 #if MAC
-    CheckStatus(error, [NSString stringWithCString:operation encoding:NSUTF8StringEncoding], NO);
+    CheckStatus(error, [NSString stringWithCString:operation encoding:NSUTF8StringEncoding], YES);
 #else
     if (error == noErr) return;
     char errorString[20];
@@ -437,12 +466,30 @@ static OSStatus RecordCallback(    void *                            inRefCon,
                                   UInt32                            inNumberFrames,
                                   AudioBufferList * __nullable    ioData) {
     AudioPlayer *player = (__bridge AudioPlayer *)inRefCon;
-    OSStatus status = AudioUnitRender(player->unit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, player->buffList);
+    player->inOriginBufferList->mBuffers[0].mDataByteSize = inNumberFrames * sizeof(Float32);
     
-    CheckError(status, "outputCallbackFun failed");
+    UInt32 frames = player->sourceHADInputFormat.mSampleRate / 1000.0;
+
+    OSStatus status = AudioUnitRender(player->unit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, player->inOriginBufferList);
     
+    CheckError(status, "RecordCallback failed");
+    if (status != noErr) {
+        return status;
+    }
+    
+
+    //必须进行格式转化：默认输入float32.我们的设置输出则是16Integer
+    Float32  *srcPtr = (Float32  *)player->inOriginBufferList->mBuffers[0].mData;
+    int16_t  *destPtr = (int16_t  *)player->buffList->mBuffers[0].mData;
+    for (int i = 0; i < inNumberFrames; i++) {
+        if(srcPtr[i] > 1.0 || srcPtr[i] < -1.0) {
+            srcPtr[i] = srcPtr[i] > 0 ? 1.0 : -1.0;
+        }
+        destPtr[i]= (int16_t)(srcPtr[i] * 32767);
+    }
+
     NSLog(@"Record Size = %d", player->buffList->mBuffers[0].mDataByteSize);
-    [player writePCMData:player->buffList->mBuffers[0].mData size:player->buffList->mBuffers[0].mDataByteSize];
+    [player writePCMData:player->buffList->mBuffers[0].mData size:inNumberFrames * sizeof(int16_t)];
     
     return status;
 }
@@ -512,10 +559,10 @@ OSStatus lyInInputDataProc(AudioConverterRef inAudioConverter, UInt32 *ioNumberD
     AudioPlayer *player = (__bridge AudioPlayer *)(inUserData);
     
     UInt32 byteSize = CONST_BUFFER_SIZE;
-    OSStatus status = AudioFileReadPacketData(player->audioFileID, NO, &byteSize, player->audioPacketFormat, player.readedPacket, ioNumberDataPackets, player->convertBuffer);
+    OSStatus status = AudioFileReadPacketData(player->audioFileID, NO, &byteSize, player->audioFilePacketFormat, player.readedPacket, ioNumberDataPackets, player->convertBuffer);
     
     if (outDataPacketDescription) { // 这里要设置好packetFormat，否则会转码失败
-        *outDataPacketDescription = player->audioPacketFormat;
+        *outDataPacketDescription = player->audioFilePacketFormat;
     }
     CheckError(status, "读取文件失败");
     
