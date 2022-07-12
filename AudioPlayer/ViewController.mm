@@ -10,6 +10,9 @@
 #import "AudioPlayer.h"
 #import "DecrpytFile.h"
 #import "AudioFileConvert.h"
+#import "DragTableView.h"
+
+#define RECORD_PATH [[NSSearchPathForDirectoriesInDomains(NSDownloadsDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingString:@"/record***.pcm"]
 
 @interface ViewController () <NSTableViewDelegate, NSTableViewDataSource, NSMenuDelegate>
 @property (weak) IBOutlet NSTextField *inputDesc;
@@ -22,12 +25,13 @@
 @property (weak) IBOutlet NSButton *recordBtn;
 
 @property (strong) NSMutableArray *filePathList;
-@property (weak) IBOutlet NSTableView *fileListTableview;
+@property (weak) IBOutlet DragDropTableView *fileListTableview;
 
 //音频输出参数
 @property (weak) IBOutlet NSTextField *sampleRate;
 @property (weak) IBOutlet NSTextField *bitDepth;
 @property (weak) IBOutlet NSTextField *channelCount;
+@property (weak) IBOutlet NSButton *clearOld;
 
 @property (assign) BOOL isChangingProgress;
 @end
@@ -40,6 +44,13 @@
     self.filePathList = [NSMutableArray arrayWithCapacity:1];
     self.fileListTableview.delegate = self;
     self.fileListTableview.dataSource = self;
+    self.fileListTableview.allowsMultipleSelection = YES;
+    
+    __weak typeof(self) weakSelf = self;
+    self.fileListTableview.dragFilesBlock = ^(NSArray * _Nonnull fileList) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        [strongSelf addNewFiles:fileList];
+    };
     
     [AudioPlayer sharedInstance].playProgress = ^(long long readPacker, float progress) {
         self.progress.stringValue = [NSString stringWithFormat:@"进度：%0.1f", progress];
@@ -79,8 +90,7 @@
         if ([[AudioPlayer sharedInstance] isFilePCMType:path]) {
             [self resetDefaultOutputParamets:path];
         }
-        [[AudioPlayer sharedInstance] setFilePath:path];
-        [[AudioPlayer sharedInstance] play];
+        [[AudioPlayer sharedInstance] play:path];
         self.inputDesc.stringValue = [[AudioPlayer sharedInstance] getAudioStreamBasicDescriptionForInput];
         self.outputDesc.stringValue = [[AudioPlayer sharedInstance] getAudioStreamBasicDescriptionForOutput];
     }
@@ -113,11 +123,45 @@
 }
 
 - (IBAction)pauseClicked:(id)sender {
+    if ([[AudioPlayer sharedInstance] isRecording]) {
+        NSControlStateValue last = self.clearOld.state;
+        [self addNewFiles:@[RECORD_PATH]];
+        [self.clearOld setState:last];
+    }
     [[AudioPlayer sharedInstance] pause];
 }
 
 - (IBAction)recordClicked:(id)sender {
-    [[AudioPlayer sharedInstance] record];
+    if ([self.filePathList containsObject:RECORD_PATH]) {
+        [self.filePathList removeObject:RECORD_PATH];
+        [self.fileListTableview reloadData];
+    }
+    
+    [[AudioPlayer sharedInstance] record:RECORD_PATH];
+}
+
+- (IBAction)onDeleteClicked:(id)sender {
+    if (self.filePathList.count <= 0) {
+        [self showAlert:@"列表为空" completionHandler:nil];
+        return;
+    }
+    
+    if (self.fileListTableview.selectedRowIndexes.count > 0) {
+        [self.fileListTableview.selectedRowIndexes enumerateIndexesWithOptions:NSEnumerationReverse usingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+            [self.filePathList removeObjectAtIndex:idx];
+        }];
+        [self.fileListTableview reloadData];
+        return;
+    }
+    
+    NSAlert *alert = [NSAlert alertWithMessageText:@"清空提醒" defaultButton:@"Continue" alternateButton:@"Cancle"
+                                       otherButton:nil informativeTextWithFormat:@"未选择任何文件，默认清空[支持手动多选]"];
+    [alert beginSheetModalForWindow:self.view.window completionHandler:^(NSModalResponse returnCode) {
+        if (NSOKButton == returnCode) {
+            [self.filePathList removeAllObjects];
+            [self.fileListTableview reloadData];
+        }
+    }];
 }
 
 - (IBAction)sliderAction:(id)sender {
@@ -131,6 +175,11 @@
 }
 
 - (IBAction)toWaveClicked:(id)sender {
+    if (self.filePathList.count <= 0) {
+        [self showAlert:@"列表为空" completionHandler:nil];
+        return;
+    }
+    
     NSString *filePath = [self.filePathList objectAtIndex:self.fileListTableview.selectedRow];
     if ([[AudioPlayer sharedInstance] isFilePCMType:filePath]) {
         NSString *destination = [DecrpytFile mapInputFileToDestinationFile:filePath byExtention:@".wav"];
@@ -151,13 +200,9 @@
         
         int res = a_law_pcm_to_wav2(pcm_file, wav_file, fmt);
         if (res) {
-            NSError *err = [NSError errorWithDomain:@"转换失败" code:-1 userInfo:nil];
-            NSAlert *alert = [NSAlert alertWithError:err];
-            [alert runModal];
+            [self showAlert:@"转换失败" completionHandler:nil];
         } else {
-            NSAlert *alert = [[NSAlert alloc] init];
-            alert.messageText = @"转换成功";
-            [alert runModal];
+            [self showAlert:@"转换成功" completionHandler:nil];
             [self openFilePath:destination];
         }
         NSLog(@"转换结果:res=%d", res);
@@ -176,14 +221,23 @@
     [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[fileURL]];
 }
 
+- (void)showAlert:(NSString *)contents completionHandler:(void (^ _Nullable)(NSModalResponse returnCode))handler {
+    NSAlert *alert = [[NSAlert alloc] init];
+    alert.messageText = contents;
+    [alert beginSheetModalForWindow:self.view.window completionHandler:^(NSModalResponse returnCode) {
+        if (handler) {
+            handler(returnCode);
+        }
+    }];
+}
+
 #pragma mark- File Action
 - (IBAction)clickLoadFileBtn:(NSButton *)sender {
-    [self resetSelectedFiles];
-    
     NSOpenPanel *panel = [NSOpenPanel openPanel];
     panel.allowsMultipleSelection = YES;
     [panel beginSheetModalForWindow:self.view.window completionHandler:^(NSModalResponse result) {
         if (result == NSModalResponseOK) {
+            NSMutableArray *files = [NSMutableArray array];
             for( NSURL* url in panel.URLs ){
                 NSString * filePath = url.path;
                 if (filePath == nil ) {
@@ -201,13 +255,37 @@
                     filePath = tempPath;
                 }
                 
-                [self.filePathList insertObject:filePath atIndex:0];
+                [files addObject:filePath];
             }
             
-            [self.fileListTableview reloadData];
-            [self.fileListTableview selectRowIndexes:[[NSIndexSet alloc] initWithIndex:0] byExtendingSelection:NO];
+            [self addNewFiles:files];
         }
     }];
+}
+
+- (void)addNewFiles:(NSArray *)files {
+    if (self.clearOld.state == NSControlStateValueOn) {
+        [self resetSelectedFiles];
+    }
+    
+    for (NSString *file in files) {
+        NSString *filePath = file;
+        if ([filePath.lastPathComponent.pathExtension isEqualToString:@"dat"]) {
+            NSError *err;
+            NSString *tempPath = [DecrpytFile decode:filePath error:&err];
+            if (err) {
+                self.inputDesc.stringValue = err.localizedDescription;
+                continue;
+            }
+            
+            filePath = tempPath;
+        }
+        
+        [self.filePathList insertObject:filePath atIndex:0];
+    }
+    
+    [self.fileListTableview reloadData];
+    [self.fileListTableview selectRowIndexes:[[NSIndexSet alloc] initWithIndex:0] byExtendingSelection:NO];
 }
 
 #pragma mark - table data souutce delegate
@@ -242,4 +320,5 @@
     
     return nil;
 }
+
 @end
