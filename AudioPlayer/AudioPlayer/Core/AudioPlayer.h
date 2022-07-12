@@ -30,6 +30,9 @@ typedef void (^PlayProgress)(long long readPacker, float progress);
 
 - (NSString *)getAudioStreamBasicDescriptionForInput;
 - (NSString *)getAudioStreamBasicDescriptionForOutput;
+
+- (NSString *)sourceHADInputFormat;
+- (NSString *)destHADInputFormat;
 - (void)play:(NSString *)filePath;
 - (void)record:(NSString *)filePath;
 - (void)pause;

@@ -20,6 +20,19 @@
 #define MAC_PLAT 1
 #define E_NABLE_RECORD_CONVERT 0
 
+#define CHEK_ERROR(status, message) \
+CheckError(status, message); \
+if (status != 0) { \
+return; \
+};
+
+#define CHEK_ERROR_RET(status, message) \
+CheckError(status, message); \
+if (status != 0) { \
+return status; \
+};
+
+
 #define BIT_DEPTH 16
 #define SAMPLE_RATE 44100
 #define CHANNEL_COUNT 1
@@ -45,9 +58,10 @@ void UndoDucking(AudioDeviceID output_device_id) {
     AudioFileID audioFileID;
     AudioStreamBasicDescription sourceFileFormat;
     AudioStreamBasicDescription expectOutputFormat;
-    AudioStreamBasicDescription sourceHADInputFormat;
-    
     AudioStreamPacketDescription *audioFilePacketFormat;
+    
+    AudioStreamBasicDescription sourceHADInputFormat;
+    AudioStreamBasicDescription destHADInputFormat;
     
     AudioBufferList *buffList;
     AudioBufferList *inOriginBufferList;
@@ -140,10 +154,10 @@ void UndoDucking(AudioDeviceID output_device_id) {
     
     OSStatus status;
     status = AudioUnitInitialize(unit);
-    CheckError(status, "AudioUnit初始化失败");
+    CHEK_ERROR(status, "AudioUnit初始化失败");
     
     status = AudioOutputUnitStart(unit);
-    CheckError(status, "audioUnit开始失败");
+    CHEK_ERROR(status, "audioUnit开始失败");
     self.isPlaying = YES;
     
     UndoDucking(0);
@@ -152,13 +166,13 @@ void UndoDucking(AudioDeviceID output_device_id) {
 - (void)pause {
     OSStatus status;
     status = AudioOutputUnitStop(unit);
-    CheckError(status, "audioUnit停止失败");
+    CHEK_ERROR(status, "audioUnit停止失败");
     
     status = AudioUnitUninitialize(unit);
-    CheckError(status, "AudioUnits取消初始化失败");
+    CHEK_ERROR(status, "AudioUnits取消初始化失败");
     
     status = AudioComponentInstanceDispose(unit);
-    CheckError(status, "audioUnit释放失败");
+    CHEK_ERROR(status, "audioUnit释放失败");
     self.isPlaying = NO;
     self.isRecording = NO;
 }
@@ -175,10 +189,10 @@ void UndoDucking(AudioDeviceID output_device_id) {
     
     OSStatus status;
     status = AudioUnitInitialize(unit);
-    CheckError(status, "AudioUnit初始化失败");
+    CHEK_ERROR(status, "AudioUnit初始化失败");
     
     status = AudioOutputUnitStart(unit);
-    CheckError(status, "audioUnit开始失败");
+    CHEK_ERROR(status, "audioUnit开始失败");
     self.isRecording = YES;
 }
 
@@ -188,6 +202,14 @@ void UndoDucking(AudioDeviceID output_device_id) {
 
 - (NSString *)getAudioStreamBasicDescriptionForOutput {
     return [AudioPlayer audioStreamBasicDescription:expectOutputFormat];
+}
+
+- (NSString *)sourceHADInputFormat {
+    return [AudioPlayer audioStreamBasicDescription:sourceHADInputFormat];
+}
+
+- (NSString *)destHADInputFormat {
+    return [AudioPlayer audioStreamBasicDescription:destHADInputFormat];
 }
 
 #pragma mark- Private Method
@@ -220,7 +242,7 @@ void UndoDucking(AudioDeviceID output_device_id) {
     //对于转PCM的场景：位深 采样率 通道数固定。
     AudioStreamBasicDescription outputFormat = [self buildAudioStreamBasicDesc:16 sampleRate:48000 channelsPerFrame:1 framesPerPacket:1];
     OSStatus status = AudioConverterNew(&sourceFileFormat, &outputFormat, &audioConverter);
-    CheckError(status, "AudioConverterNew failed");
+    CHEK_ERROR(status, "AudioConverterNew failed");
     
     [self prepareBufferList];
     [self prepareConverBuffer];
@@ -309,7 +331,7 @@ void UndoDucking(AudioDeviceID output_device_id) {
     
     AudioComponent outputComponent = AudioComponentFindNext(NULL, &desc);
     OSStatus status = AudioComponentInstanceNew(outputComponent, &unit);
-    CheckError(status, "AudioComponentInstanceNew failed");
+    CHEK_ERROR(status, "AudioComponentInstanceNew failed");
     
     if (isEnableRecord) {
         // get hardware device format
@@ -320,38 +342,32 @@ void UndoDucking(AudioDeviceID output_device_id) {
         NSLog(@"打印输出：原始设备的输入流信息:*********");
         [[self class] audioStreamBasicDescription:sourceHADInputFormat];
 
-        sourceHADInputFormat.mChannelsPerFrame = 1;
-        sourceHADInputFormat.mSampleRate = 44100; // 参数不对的话，会导致命中： client-side input and output formats do not match (err=-10875)
-        sourceHADInputFormat.mFormatID = kAudioFormatLinearPCM;
-        sourceHADInputFormat.mFormatFlags =
-            kAudioFormatFlagsNativeFloatPacked | kLinearPCMFormatFlagIsNonInterleaved;
-        sourceHADInputFormat.mBitsPerChannel = sizeof(Float32) * 8;
-        sourceHADInputFormat.mBytesPerFrame = sourceHADInputFormat.mBitsPerChannel * sourceHADInputFormat.mChannelsPerFrame / 8;
-        sourceHADInputFormat.mFramesPerPacket = 1;
-        sourceHADInputFormat.mBytesPerPacket = sourceHADInputFormat.mBytesPerFrame;
-        
-        NSLog(@"打印输出：修改之后的输入流信息:*********");
-        [[self class] audioStreamBasicDescription:sourceHADInputFormat];
+        destHADInputFormat = [self buildDestHALASBD:sizeof(Float32) * 8
+                    sampleRate:44100
+                  mForamtFlags:kAudioFormatFlagsNativeFloatPacked | kLinearPCMFormatFlagIsNonInterleaved
+         ];
+        NSLog(@"打印输出：修改设备的输入流:*********");
+        [[self class] audioStreamBasicDescription:destHADInputFormat];
 
-        status = AudioUnitSetProperty(unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, kInputBus, &sourceHADInputFormat, sizeof(sourceHADInputFormat));
-        CheckError(status, "kAudioUnitProperty_StreamFormat failed");
+        status = AudioUnitSetProperty(unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, kInputBus, &destHADInputFormat, sizeof(destHADInputFormat));
+        CHEK_ERROR(status, "kAudioUnitProperty_StreamFormat failed");
         
         //启动录制
         UInt32 flagIn = 1;
         status = AudioUnitSetProperty(unit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input, kInputBus, &flagIn, sizeof(flagIn));
-        CheckError(status, "kAudioOutputUnitProperty_EnableIO failed");
+        CHEK_ERROR(status, "kAudioOutputUnitProperty_EnableIO failed");
 #if 1
         const UInt32 one = 1;
         const UInt32 zero = 0;
 
         status = AudioUnitSetProperty(unit, kAUVoiceIOProperty_BypassVoiceProcessing, kAudioUnitScope_Global, kInputBus, &one, sizeof(zero));
-        CheckError(status, "kAUVoiceIOProperty_BypassVoiceProcessing failed");
+        CHEK_ERROR(status, "kAUVoiceIOProperty_BypassVoiceProcessing failed");
         
         status = AudioUnitSetProperty(unit, kAUVoiceIOProperty_VoiceProcessingEnableAGC, kAudioUnitScope_Global, kInputBus, &one, sizeof(zero));
-        CheckError(status, "kAUVoiceIOProperty_VoiceProcessingEnableAGC failed");
+        CHEK_ERROR(status, "kAUVoiceIOProperty_VoiceProcessingEnableAGC failed");
 
 //        status = AudioUnitSetProperty(unit, kAUVoiceIOProperty_MuteOutput, kAudioUnitScope_Global, kInputBus, &zero, sizeof(zero));
-//        CheckError(status, "kAUVoiceIOProperty_MuteOutput failed");
+//        CHEK_ERROR(status, "kAUVoiceIOProperty_MuteOutput failed");
 #endif
 
         //设置声音录制回调
@@ -359,21 +375,37 @@ void UndoDucking(AudioDeviceID output_device_id) {
         recordCallback.inputProc = RecordCallback;
         recordCallback.inputProcRefCon = (__bridge void *)self;
         status = AudioUnitSetProperty(unit, kAudioOutputUnitProperty_SetInputCallback, kAudioUnitScope_Global, kInputBus, &recordCallback, sizeof(recordCallback));
-        CheckError(status, "kAudioOutputUnitProperty_SetInputCallback failed");
+        CHEK_ERROR(status, "kAudioOutputUnitProperty_SetInputCallback failed");
     } else {
         //设置输入流格式
         expectOutputFormat = [self buildAudioStreamBasicDesc:self.bitDepth sampleRate:self.sampleRate channelsPerFrame:self.channelCount framesPerPacket:1];
         
         status = AudioUnitSetProperty(unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, kOutputBus, &expectOutputFormat, sizeof(expectOutputFormat));
-        CheckError(status, "kAudioUnitProperty_StreamFormat failed");
+        CHEK_ERROR(status, "kAudioUnitProperty_StreamFormat failed");
         
         //设置声音输入回掉
         AURenderCallbackStruct renderCallback;
         renderCallback.inputProc = inputCallbackFun;
         renderCallback.inputProcRefCon = (__bridge void *)self;
         status = AudioUnitSetProperty(unit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, kOutputBus, &renderCallback, sizeof(renderCallback));
-        CheckError(status, "kAudioUnitProperty_SetRenderCallback failed");
+        CHEK_ERROR(status, "kAudioUnitProperty_SetRenderCallback failed");
     }
+}
+
+- (AudioStreamBasicDescription)buildDestHALASBD:(UInt32)mBitsPerChannel
+                                     sampleRate:(UInt32)sampleRate
+                                   mForamtFlags:(AudioFormatFlags)mFormatFlags {
+    AudioStreamBasicDescription destHADInputFormat;
+    destHADInputFormat.mChannelsPerFrame = 1;
+    destHADInputFormat.mSampleRate = sampleRate; // 参数不对的话，会导致命中： client-side input and output formats do not match (err=-10875)
+    destHADInputFormat.mFormatID = kAudioFormatLinearPCM;
+    destHADInputFormat.mFormatFlags = mFormatFlags;
+    destHADInputFormat.mBitsPerChannel = mBitsPerChannel;
+    destHADInputFormat.mBytesPerFrame = destHADInputFormat.mBitsPerChannel * destHADInputFormat.mChannelsPerFrame / 8;
+    destHADInputFormat.mFramesPerPacket = 1;
+    destHADInputFormat.mBytesPerPacket = destHADInputFormat.mBytesPerFrame;
+    
+    return destHADInputFormat;
 }
 
 - (AudioStreamBasicDescription)buildAudioStreamBasicDesc:(UInt32)mBitsPerChannel sampleRate:(UInt32)sampleRate channelsPerFrame:(UInt32)channelsPerFrame framesPerPacket:(UInt32)framesPerPacket {
@@ -420,7 +452,7 @@ void UndoDucking(AudioDeviceID output_device_id) {
 static void CheckError(OSStatus error, const char *operation)
 {
 #if MAC
-    CheckStatus(error, [NSString stringWithCString:operation encoding:NSUTF8StringEncoding], YES);
+    CheckStatus(error, [NSString stringWithCString:operation encoding:NSUTF8StringEncoding], NO);
 #else
     if (error == noErr) return;
     char errorString[20];
@@ -470,17 +502,13 @@ static OSStatus RecordCallback(    void *                            inRefCon,
     AudioPlayer *player = (__bridge AudioPlayer *)inRefCon;
     player->inOriginBufferList->mBuffers[0].mDataByteSize = inNumberFrames * sizeof(Float32);
     
-    UInt32 frames = player->sourceHADInputFormat.mSampleRate / 1000.0;
+    UInt32 frames = player->destHADInputFormat.mSampleRate / 1000.0;
 
     OSStatus status = AudioUnitRender(player->unit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, player->inOriginBufferList);
     
-    CheckError(status, "RecordCallback failed");
-    if (status != noErr) {
-        return status;
-    }
-    
+    CHEK_ERROR_RET(status, "RecordCallback failed");
 
-    //必须进行格式转化：默认输入float32.我们的设置输出则是16Integer
+    //必须进行格式转化：默认输入float32.我们的播放时，设置则是16Integer
     Float32  *srcPtr = (Float32  *)player->inOriginBufferList->mBuffers[0].mData;
     int16_t  *destPtr = (int16_t  *)player->buffList->mBuffers[0].mData;
     for (int i = 0; i < inNumberFrames; i++) {
@@ -490,7 +518,7 @@ static OSStatus RecordCallback(    void *                            inRefCon,
         destPtr[i]= (int16_t)(srcPtr[i] * 32767);
     }
 
-    NSLog(@"Record Size = %d", player->buffList->mBuffers[0].mDataByteSize);
+    NSLog(@"Record Size = %lu", inNumberFrames * sizeof(int16_t));
     [player writePCMData:player->buffList->mBuffers[0].mData size:inNumberFrames * sizeof(int16_t)];
     
     return status;
@@ -540,8 +568,7 @@ static OSStatus inputCallbackFun(    void *                            inRefCon,
         
         OSStatus status = AudioConverterFillComplexBuffer(player->audioConverter, lyInInputDataProc, (__bridge void * _Nullable)(player), &inNumberFrames, player->buffList, NULL);
         if (status) {
-            CheckError(status, "inputCallbackFun failed");
-            return status;
+            CHEK_ERROR_RET(status, "inputCallbackFun failed");
         }
         
         memcpy(ioData->mBuffers[0].mData, player->buffList->mBuffers[0].mData, player->buffList->mBuffers[0].mDataByteSize);
@@ -566,7 +593,7 @@ OSStatus lyInInputDataProc(AudioConverterRef inAudioConverter, UInt32 *ioNumberD
     if (outDataPacketDescription) { // 这里要设置好packetFormat，否则会转码失败
         *outDataPacketDescription = player->audioFilePacketFormat;
     }
-    CheckError(status, "读取文件失败");
+    CHEK_ERROR_RET(status, "读取文件失败");
     
     if (!status && ioNumberDataPackets > 0) {
         ioData->mBuffers[0].mDataByteSize = byteSize;

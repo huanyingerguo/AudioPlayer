@@ -138,6 +138,9 @@
     }
     
     [[AudioPlayer sharedInstance] record:RECORD_PATH];
+    
+    self.inputDesc.stringValue = [[AudioPlayer sharedInstance] sourceHADInputFormat];
+    self.outputDesc.stringValue = [[AudioPlayer sharedInstance] destHADInputFormat];
 }
 
 - (IBAction)onDeleteClicked:(id)sender {
